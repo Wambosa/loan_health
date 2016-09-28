@@ -28,6 +28,7 @@
     <!--note: app code-->
     <script type="text/javascript" src="js/service/Http.js"></script>
     <script type="text/javascript" src="js/service/Proxy.js"></script>
+    <script type="text/javascript" src="js/util.js"></script>
     <script type="text/javascript" src="js/model/InteractiveGraph.js"></script>
     <script type="text/javascript" src="js/model/HealthGraph.js"></script>
 
@@ -83,23 +84,22 @@
 
         <div id="chart_div"></div>
 
+        <div class="container" data-bind="visible: isHistory() || isWhatIf(), foreach: {data: paymentYears, as: 'year'}">
+            <a class="round-button" data-bind="text: year, css: {selectedRoundButton: year == $parent.selectedYear()}, click: function(){$parent.selectedYear(year);}"></a>
+        </div>
+
 
         <a data-role="button" class="wideButton" data-bind="css: {activeButton: isHistory()}, click: function(){mode('history')}">History</a>
         <a data-role="button" class="wideButton" data-bind="css: {activeButton: isSummary()}, click: function(){mode('summary')}">Summary</a>
         <a data-role="button" class="wideButton" data-bind="css: {activeButton: isWhatIf()}, click: function(){mode('whatIf')}">What If I...</a>
 
-        <textarea readonly class="pretty-print" data-bind="text: helpText"></textarea>
+        <textarea readonly class="pretty-print" data-bind="text: helpText, css: {feelinTwentyTwo: isWhatIf()}"></textarea>
 
-        <div data-bind="visible: isHistory()">
-            <textarea readonly> "I will erase the demons of the past ~Zeratul"</textarea>
-            <textarea readonly> "Hinesight is 20/20 ~todo"</textarea>
-        </div>
-
-        <div data-bind="visible: isSummary()">
+        <div class="container" data-bind="visible: isSummary()">
             <a data-role="button">Reminder Opt In</a>
         </div>
 
-        <div data-bind="visible: isWhatIf()">
+        <div class="container" data-bind="visible: isWhatIf()">
             <input id="payment-slider" class="balSlider"/>
             <input id="payment-keyboard" type="number" data-bind="value: monthlyPayment">
         </div>

@@ -3,22 +3,52 @@ function HealthGraph(initData){
 
     this.mode = ko.observable('history');
 
-    this.table = [["time", "principal", "interest", "fees"]];
-    initData.paymentHistory.slice(-6).forEach(function(pay){
-        self.table.push([
+    this.table = initData.paymentHistory.slice(-8).map(function(pay){
+        return [
             moment(pay.date).format('MMM'),
             pay.principal,
             pay.interest,
             pay.fee
-        ]);
+        ];
     });
+    this.table.unshift(getTableHeaders());
 
     this.slider = null;
+
+    this.paymentYears = ko.observableArray(getPaymentYears(initData.paymentHistory));
+    this.selectedYear = ko.observable(this.paymentYears.slice(-1)[0]);
+
+    this.selectedYear.subscribe(function(newYear){
+
+        self.table = paymentDataToArray(self.activeDataSet(self.mode())
+            .filter(yearFilter(newYear)));
+
+        self.table.unshift(getTableHeaders());
+
+        self.reDraw();
+    });
+
     this.monthlyPayment = ko.observable(initData.payment);
     this.monthlyPayment.subscribe(function (val) {
         self.slider.value(val);
-        self.deltaUpdate({x:self.table.length-1, y: 1}, val);
+        var probableMaturity = moment(self.activeDataSet(self.mode()).slice(-1)[0].date);
+        self.paymentYears(getWhatIfYears(probableMaturity));
+
+        var newMinYear = self.paymentYears.slice(0,1)[0];
+
+        self.selectedYear(0);
+        self.selectedYear(newMinYear);
     });
+
+    this.remainingPrincipal = initData.paymentHistory
+        .map(function(pay){
+            return pay.principal;
+        }).reduce(function(a,b){return a+b;});
+
+    this.activeDataSet = function(mode){
+        return mode == 'whatIf' && predictPayments(self.remainingPrincipal, initData.rate, self.monthlyPayment(), moment(initData.paymentHistory.slice(-1)[0].date))
+        || initData.paymentHistory;
+    };
 
     this.isHistory = ko.pureComputed(function(){return self.mode() == 'history';});
     this.isSummary = ko.pureComputed(function(){return self.mode() == 'summary';});
@@ -49,8 +79,17 @@ function HealthGraph(initData){
     this.mode.subscribe(function(newMode){
 
         if(newMode === 'whatIf'){
+
             self.draw('ColumnChart', self.divId, self.chartOptions);
-            window.setTimeout(function(){self.slider.resize();}, 10);
+
+            var probableMaturity = moment(self.activeDataSet(newMode).slice(-1)[0].date);
+            self.paymentYears(getWhatIfYears(probableMaturity));
+            self.selectedYear(0);
+            self.selectedYear(self.paymentYears.slice(0,1)[0]);
+
+            window.setTimeout(function(){
+                self.slider.resize();
+            }, 10);
         }
 
         if(newMode == 'summary'){
@@ -70,6 +109,8 @@ function HealthGraph(initData){
 
         if(newMode == 'history') {
             self.draw('ColumnChart', self.divId, self.chartOptions);
+            self.paymentYears(getPaymentYears(initData.paymentHistory));
+            self.selectedYear(moment(initData.paymentHistory.slice(-1)[0].date).format("YYYY"));
         }
 
         self.helpText(self[newMode+'Text']());
