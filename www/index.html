@@ -21,6 +21,7 @@
     <script src="js/libs/jquery.min.js"></script>
     <script src="js/libs/kendo.all.min.js"></script>
     <script src="js/libs/knockout-3.4.0.js"></script>
+    <script src="js/libs/moment.min.js"></script>
     <script src="cordova.js"></script>
 
 
@@ -28,7 +29,7 @@
     <script type="text/javascript" src="js/service/Http.js"></script>
     <script type="text/javascript" src="js/service/Proxy.js"></script>
     <script type="text/javascript" src="js/model/InteractiveGraph.js"></script>
-
+    <script type="text/javascript" src="js/model/HealthGraph.js"></script>
 
     <!--init-->
     <script src="js/init/AppShim.js"></script>
@@ -62,7 +63,12 @@
         </ul>
 
         <div class="action-buttons">
-            <a href="#view-transitions-welcome" data-transition="overlay:down reverse" data-role="button" class="km-primary km-justified transitions-button">Login</a><br />
+            <a href="#view-transitions-welcome"
+               data-bind="click: function(){console.log(redraw); redraw();}"
+               data-transition="overlay:down reverse"
+               data-role="button"
+               class="km-primary km-justified transitions-button">Login</a>
+            <br/>
             <a href="#landingPage" data-transition="overlay:up reverse" data-role="button" class="km-justified transitions-cancel">Cancel</a>
         </div>
     </div>
@@ -75,7 +81,7 @@
         <!--Play here-->
 
 
-        <div id="chart_div" data-bind="style: {width: chartWidth, height: chartHeight}"></div>
+        <div id="chart_div"></div>
 
 
         <a data-role="button" class="wideButton" data-bind="css: {activeButton: isHistory()}, click: function(){mode('history')}">History</a>

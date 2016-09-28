@@ -5,16 +5,19 @@ function Device(callback){
     this.redirect = function(url){window.open(url, '_system');};
 
     document.addEventListener("deviceready", function() {
-        self.isDeviceReady = true;
+        if(!self.isDeviceReady) {
 
-        self.cordova    = device.cordova;
-        self.model      = device.model;
-        self.platform   = device.platform;
-        self.uuid       = device.uuid;
-        self.version    = device.version;
+            self.isDeviceReady = true;
 
-        if(callback)
-            callback(self);
+            self.cordova = device.cordova;
+            self.model = device.model;
+            self.platform = device.platform;
+            self.uuid = device.uuid;
+            self.version = device.version;
+
+            if (callback)
+                callback(self);
+        }
 
     }, true);
 

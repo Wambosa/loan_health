@@ -12,6 +12,7 @@ function Proxy(httpService){
     var db = {
         "1234": {
             name: "Oliver Ontime",
+            vehicle: "2013 FORD FIESTA",
             principal: 15769.30,
             rate: 0.133,
             term: 72,
