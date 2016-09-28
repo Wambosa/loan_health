@@ -1,0 +1,85 @@
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" id="com.customtaxapps.grandfinancialservices" version="1.0.0">
+    <name>Loan Health</name>
+    <description>Borrower help tool</description>
+    <author href="http://shondiaz.com" email="shon@shondiaz.com">Shon Diaz</author>
+    <content src="index.html"/>
+
+    <gap:plugin name="org.apache.cordova.device"/>
+    <gap:plugin name="cordova-plugin-splashscreen" source="npm" version="3.0.0"/>
+    <gap:plugin name="com.phonegap.plugin.statusbar" version="1.1.0" />
+
+    <preference name="phonegap-version" value="cli-5.2.0" />
+    <preference name="permissions" value="none"/>
+    <preference name="orientation" value="portrait"/>
+    <preference name="target-device" value="universal"/>
+    <preference name="fullscreen" value="false"/>
+    <preference name="webviewbounce" value="false"/>
+    <preference name="prerendered-icon" value="true"/>
+    <preference name="stay-in-webview" value="false"/>
+    <preference name="ios-statusbarstyle" value="black-opaque"/>
+    <preference name="detect-data-types" value="true"/>
+    <preference name="exit-on-suspend" value="false"/>
+    <preference name="disable-cursor" value="false"/>
+    <preference name="android-minSdkVersion" value="14"/>
+    <preference name="android-installLocation" value="auto"/>
+    <preference name="StatusBarOverlaysWebView" value="true" />
+    <preference name="android-windowSoftInputMode" value="adjustResize" />
+
+    <splash src="splash.png" />
+    <preference name="SplashScreen" value="splash.png" />
+    <preference name="SplashScreenDelay" value="3000" />
+    <preference name="FadeSplashScreen" value="true"/>
+    <preference name="FadeSplashScreenDuration" value="3000"/>
+    <preference name="SplashMaintainAspectRatio" value="true" />
+    <preference name="show-splash-screen-spinner" value="true"/>
+    <preference name="AutoHideSplashScreen" value="true"/>
+
+    <gap:splash src="res/screen/ios/screen-iphone-portrait.png"         gap:platform="ios"     width="320" height="480" />
+    <gap:splash src="res/screen/ios/screen-iphone-portrait-2x.png"      gap:platform="ios"     width="640" height="960" />
+    <gap:splash src="res/screen/ios/screen-iphone-portrait-568h-2x.png" gap:platform="ios"     width="640" height="1136" />
+    <gap:splash src="res/screen/ios/screen-ipad-portrait.png"           gap:platform="ios"     width="768" height="1024" />
+    <gap:splash src="res/screen/ios/screen-ipad-portrait-2x.png"        gap:platform="ios"     width="1536" height="2048" />
+
+    <icon src="icon.png"/>
+    <icon src="res/icon/ios/icon-2x.png" gap:platform="ios" width="114" height="114"/>
+    <icon src="res/icon/ios/icon-57.png" gap:platform="ios" width="57" height="57"/>
+    <icon src="res/icon/ios/icon-57-2x.png" gap:platform="ios" width="114" height="114"/>
+    <icon src="res/icon/ios/icon-60.png" gap:platform="ios" width="60" height="60"/>
+    <icon src="res/icon/ios/icon-60-2x.png" gap:platform="ios" width="120" height="120"/>
+    <icon src="res/icon/ios/icon-60-3x.png" gap:platform="ios" width="180" height="180"/>
+    <icon src="res/icon/ios/icon-72.png" gap:platform="ios" width="72" height="72"/>
+    <icon src="res/icon/ios/icon-72-2x.png" gap:platform="ios" width="144" height="144"/>
+    <icon src="res/icon/ios/icon-76.png" gap:platform="ios" width="76" height="76"/>
+    <icon src="res/icon/ios/icon-76-2x.png" gap:platform="ios" width="152" height="152"/>
+    <icon src="res/icon/ios/icon-114.png" gap:platform="ios" width="114" height="114"/>
+    <icon src="res/icon/ios/icon-144.png" gap:platform="ios" width="144" height="144"/>
+    <platform name="android">
+        <icon src="res/icon/android/icon_transparent.png" density="ldpi" />
+        <icon src="res/icon/android/icon_transparent.png" density="mdpi" />
+        <icon src="res/icon/android/icon_transparent.png" density="hdpi" />
+        <icon src="res/icon/android/icon_transparent.png" density="xhdpi" />
+    </platform>
+
+    <access origin="*"/>
+    <!-- Added the following intents to support the removal of whitelist code from base cordova to a plugin -->
+    <!-- Whitelist configuration. Refer to https://cordova.apache.org/docs/en/edge/guide_appdev_whitelist_index.md.html -->
+    <plugin name="cordova-plugin-whitelist" />
+    <allow-navigation href="*://*.sclabs.dev/*"/><allow-navigation href="*://localhost:3000/*"/>
+    <allow-intent href="tel:*" />
+    <allow-intent href="sms:*" />
+    <allow-intent href="mailto:*" />
+    <allow-intent href="geo:*" />
+    <platform name="android">
+        <allow-intent href="market:*"/>
+    </platform>
+    <platform name="ios">
+        <allow-intent href="itms:*"/>
+        <allow-intent href="itms-apps:*"/>
+    </platform>
+    <gap:config-file platform="ios" parent="UIStatusBarHidden">
+        <true/>
+    </gap:config-file>
+    <gap:config-file platform="ios" parent="UIViewControllerBasedStatusBarAppearance">
+        <false/>
+    </gap:config-file>
+</widget>
