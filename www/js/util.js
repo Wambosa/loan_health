@@ -77,10 +77,38 @@ function predictPayments(amountLeft, rate, paymentAmount, fromDate){
     return payments;
 }
 
+function summarize(paymentHistory){
+
+    var principalTotal = 0;
+    var interestTotal = 0;
+    var feeTotal = 0;
+
+    paymentHistory.forEach(function(pay){
+        principalTotal += pay.principal;
+        interestTotal += pay.interest;
+        feeTotal += pay.fee;
+    });
+
+    return [
+        ["area", "totalAmount"],
+        ["principal", principalTotal],
+        ["interest", interestTotal],
+        ["fee", feeTotal]
+    ];
+}
+
 function daysThisYear(year){
     return Math.floor((moment("12-31-"+year) - moment("1-1-"+year)) / 86400000);
 }
 
 function daysBetween(from, to){
     return Math.floor((moment(to) - moment(from)) / 86400000);
+}
+
+function last(array){
+    return array.slice(-1)[0];
+}
+
+function first(array){
+    return array.slice(0, 1)[0];
 }

@@ -16,7 +16,7 @@ function HealthGraph(initData){
     this.slider = null;
 
     this.paymentYears = ko.observableArray(getPaymentYears(initData.paymentHistory));
-    this.selectedYear = ko.observable(this.paymentYears.slice(-1)[0]);
+    this.selectedYear = ko.observable(last(this.paymentYears));
 
     this.selectedYear.subscribe(function(newYear){
 
@@ -31,13 +31,7 @@ function HealthGraph(initData){
     this.monthlyPayment = ko.observable(initData.payment);
     this.monthlyPayment.subscribe(function (val) {
         self.slider.value(val);
-        var probableMaturity = moment(self.activeDataSet(self.mode()).slice(-1)[0].date);
-        self.paymentYears(getWhatIfYears(probableMaturity));
-
-        var newMinYear = self.paymentYears.slice(0,1)[0];
-
-        self.selectedYear(0);
-        self.selectedYear(newMinYear);
+        refreshWhatIfView();
     });
 
     this.whatIfStrategies = ko.observableArray([
@@ -72,7 +66,7 @@ function HealthGraph(initData){
     });
 
     this.summaryText = ko.pureComputed(function(){
-        return "You are going a great job! Looks like you can benefit from our reminder service below.";
+        return "You have completed 21 payments on time and 4 payments were late. Don't let due dates sneak up on you! Tap 'Reminder Opt In' to receive calendar reminders and/or text reminders.";
     });
 
     this.whatIfText = ko.pureComputed(function () {
@@ -85,16 +79,20 @@ function HealthGraph(initData){
         this.monthlyPayment(sliderEvent.value);
     };
 
+    function refreshWhatIfView(){
+        var probableMaturity = moment(last(self.activeDataSet('whatIf')).date);
+        self.paymentYears(getWhatIfYears(probableMaturity));
+        self.selectedYear(0);
+        self.selectedYear(first(self.paymentYears()));
+    }
+
     this.mode.subscribe(function(newMode){
 
         if(newMode === 'whatIf'){
 
             self.draw('ColumnChart', self.divId, self.chartOptions);
 
-            var probableMaturity = moment(self.activeDataSet(newMode).slice(-1)[0].date);
-            self.paymentYears(getWhatIfYears(probableMaturity));
-            self.selectedYear(0);
-            self.selectedYear(self.paymentYears.slice(0,1)[0]);
+            refreshWhatIfView();
 
             window.setTimeout(function(){
                 self.slider.resize();
@@ -105,21 +103,21 @@ function HealthGraph(initData){
 
             var chartOptions = {
                 pieHole: 0.5,
-                title: "Summary",
+                title: initData.name + "'s Summary",
                 height: self.chartHeight(),
                 width: self.chartWidth(),
                 legend: {position: 'top', maxLines: 2},
                 colors: ['#79c36a', '#f9a65a', '#f1595f']
             };
 
-            self.draw('PieChart', self.divId, chartOptions,
-                [["area", "totalAmount"], ["principal", 1000],["interest", 300], ["fees", 50]])
+            self.draw('PieChart', self.divId, chartOptions, summarize(self.activeDataSet('history')));
         }
 
         if(newMode == 'history') {
             self.draw('ColumnChart', self.divId, self.chartOptions);
-            self.paymentYears(getPaymentYears(initData.paymentHistory));
-            self.selectedYear(moment(initData.paymentHistory.slice(-1)[0].date).format("YYYY"));
+
+            self.paymentYears(getPaymentYears(self.activeDataSet('history')));
+            self.selectedYear(moment(last(self.activeDataSet('history')).date).format("YYYY"));
         }
 
         self.helpText(self[newMode+'Text']());

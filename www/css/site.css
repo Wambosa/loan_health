@@ -36,6 +36,7 @@ select {
     border-radius: 50%;
     text-align:center;
     text-decoration:none;
+    color: white;
     background: lightgrey;
     font-size:12px;
     font-weight:bold;
@@ -67,7 +68,10 @@ select {
 
 .fiftyPixelsHigh{
     height: 47px;
+    font-size: medium;
+    font-weight: bold;
 }
+
 
 .k-slider .k-slider-selection {
     background-color: yellowgreen;
