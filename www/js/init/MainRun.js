@@ -39,13 +39,14 @@ DEVICE = new Device(function initViewModels(){
     healthGraph.slider = $("#payment-slider").kendoSlider({
         increaseButtonTitle: "Right",
         decreaseButtonTitle: "Left",
-        min: 25,
-        max: 1000,
+        min: 50,
+        max: 1500,
         smallStep: 50,
         largeStep: 100,
         value: healthGraph.monthlyPayment(),
         slide: healthGraph.onSlide.bind(healthGraph)
     }).data("kendoSlider");
+    healthGraph.slider.wrapper.css("width", "100%");
 
     window.app = new kendo.mobile.Application(document.body, {
         layout: "home-page",

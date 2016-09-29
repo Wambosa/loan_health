@@ -88,6 +88,9 @@
             <a class="round-button" data-bind="text: year, css: {selectedRoundButton: year == $parent.selectedYear()}, click: function(){$parent.selectedYear(year);}"></a>
         </div>
 
+        <div class="container" data-bind="visible: isSummary()">
+            <a data-role="button" class="fiftyPixelsHigh">Reminder Opt In</a>
+        </div>
 
         <a data-role="button" class="wideButton" data-bind="css: {activeButton: isHistory()}, click: function(){mode('history')}">History</a>
         <a data-role="button" class="wideButton" data-bind="css: {activeButton: isSummary()}, click: function(){mode('summary')}">Summary</a>
@@ -95,14 +98,11 @@
 
         <textarea readonly class="pretty-print" data-bind="text: helpText, css: {feelinTwentyTwo: isWhatIf()}"></textarea>
 
-        <div class="container" data-bind="visible: isSummary()">
-            <a data-role="button">Reminder Opt In</a>
-        </div>
-
-        <div class="container" data-bind="visible: isWhatIf()">
+        <div class="container vertical" data-bind="visible: isWhatIf()">
             <input id="payment-slider" class="balSlider"/>
-            <input id="payment-keyboard" type="number" data-bind="value: monthlyPayment">
+            <label>What if I payed <input id="payment-keyboard" type="number" data-bind="value: monthlyPayment"> </label>
         </div>
+        <select data-bind="options: whatIfStrategies, value: selectedStrategy, visible: isWhatIf()"></select>
 
         <!--Stop Playing-->
     </div>

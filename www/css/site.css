@@ -1,11 +1,26 @@
 
+select {
+    float: right;
+    transform: translateY(-21px);
+}
+
 .container {
     display: flex;
     justify-content: center;
 }
 
+.vertical {
+    flex-direction: column;
+}
+
 .container input{
     margin: auto;
+}
+
+.container label{
+    font-weight: bold;
+    font-size: medium;
+    color: darkgray;
 }
 
 .action-buttons {
@@ -28,8 +43,7 @@
     margin-bottom: 5px;
 }
 
-.selectedRoundButton
-{
+.selectedRoundButton {
     color: black;
     background: lightgreen;
 }
@@ -48,7 +62,11 @@
 }
 
 .feelinTwentyTwo{
-    height: 22%;
+    height: 20%;
+}
+
+.fiftyPixelsHigh{
+    height: 47px;
 }
 
 .k-slider .k-slider-selection {
@@ -89,6 +107,10 @@ a.wideButton.km-widget.km-button.activeButton {
     transform: translateY(5px);
 }
 
+#payment-keyboard{
+    width: 15%;
+    text-align: center;
+}
 
 #loginpage .km-back {
     display: none;

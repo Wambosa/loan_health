@@ -40,6 +40,15 @@ function HealthGraph(initData){
         self.selectedYear(newMinYear);
     });
 
+    this.whatIfStrategies = ko.observableArray([
+        "Normally Every Month",
+        "One Time Only",
+        "Every Other Month",
+        "Once a Quarter",
+        "Once a Year",
+    ]);
+    this.selectedStrategy = ko.observable("Normally Every Month");
+
     this.remainingPrincipal = initData.paymentHistory
         .map(function(pay){
             return pay.principal;
