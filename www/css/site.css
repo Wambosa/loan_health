@@ -1,19 +1,22 @@
 
 .strategy-selector {
     float: right;
-    transform: translateY(-21px);
+    /*transform: translateY(-21px);*/
     color: darkgrey;
     font-style: italic;
     border-style: none;
 }
 
 .container {
-    display: flex;
-    justify-content: center;
+    /*display: flex;*/
+    /*justify-content: center;*/
+}
+.oldCentered {
+    text-align: center;
 }
 
 .vertical {
-    flex-direction: column;
+    /*flex-direction: column;*/
 }
 
 .container input{
@@ -61,11 +64,11 @@
     overflow: auto;
     padding: 5px;
     width: 100%;
-    height: 25%;
+    height: 28vh;
 }
 
 .feelinTwentyTwo{
-    height: 20%;
+    height: 20vh;
 }
 
 .fiftyPixelsHigh{
@@ -77,6 +80,16 @@
 
 .k-slider .k-slider-selection {
     background-color: yellowgreen;
+}
+
+#graph-view > div.km-content.km-widget.km-native-scroller > div:nth-child(9) > div > div > div > a {
+    width: 35px;
+    height: 35px;
+    opacity: .8;
+}
+
+#graph-view > div.km-content.km-widget.km-native-scroller > div.container.vertical{
+    display: inline-block;
 }
 
 h1.app-logo {

@@ -12,7 +12,6 @@ InteractiveGraph.prototype = {
     chartHeight: window.screen.height * .5,
 
     applyBindings: function(){
-        console.log(this);
         ko.applyBindings(this);
         return this;
     },

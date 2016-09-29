@@ -49,7 +49,7 @@ function HealthGraph(initData){
         }).reduce(function(a,b){return a+b;});
 
     this.activeDataSet = function(mode){
-        return mode == 'whatIf' && predictPayments(self.remainingPrincipal, initData.rate, self.monthlyPayment(), moment(initData.paymentHistory.slice(-1)[0].date))
+        return mode == 'whatIf' && predictPayments(self.remainingPrincipal, initData.rate, self.monthlyPayment(), moment(last(initData.paymentHistory).date))
         || initData.paymentHistory;
     };
 

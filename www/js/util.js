@@ -29,8 +29,8 @@ function getPaymentYears(paymentData){
 function getWhatIfYears(maturityDate){
     var years = [];
 
-    var thisYear = moment().format("YYYY");
-    var yearsLeft = moment(maturityDate).format("YYYY") - thisYear;
+    var thisYear = +moment().format("YYYY");
+    var yearsLeft = +moment(maturityDate).format("YYYY") - thisYear;
 
     for(var i=0; i <= yearsLeft;i++)
         years.push(+thisYear + i);
@@ -40,7 +40,7 @@ function getWhatIfYears(maturityDate){
 
 function yearFilter(desiredYear){
     return function(pay){
-        return desiredYear == moment(pay.date).format("YYYY");
+        return +desiredYear == +moment(pay.date).format("YYYY");
     }
 }
 
@@ -51,20 +51,21 @@ function predictPayments(amountLeft, rate, paymentAmount, fromDate){
     var payments = [];
 
     var i = 0;
-    var maxMonths = 96;
+    var maxMonths = 72;
 
     while(amountLeft > 0 && i < maxMonths){
 
         var thisMonth = moment(fromDate).add(i, 'month');
 
         var days = daysBetween(thisMonth, moment(fromDate).add(1+i, 'month'));
+
         var interest = (dailyInterestRate * amountLeft) * days;
 
         var towardsPrincipal = Math.max(paymentAmount - interest, 0);
         var towardsInterest = Math.min(paymentAmount, interest);
 
         payments.push({
-            date: thisMonth.format("MM-DD-YYYY"),
+            date: thisMonth.format("YYYY-MM-DD"),
             principal: towardsPrincipal,
             interest: towardsInterest,
             fee: 0
@@ -98,11 +99,11 @@ function summarize(paymentHistory){
 }
 
 function daysThisYear(year){
-    return Math.floor((moment("12-31-"+year) - moment("1-1-"+year)) / 86400000);
+    return Math.floor((+moment(year+"-12-31") - +moment(year+"-01-01")) / 86400000);
 }
 
 function daysBetween(from, to){
-    return Math.floor((moment(to) - moment(from)) / 86400000);
+    return Math.floor((+moment(to) - +moment(from)) / 86400000);
 }
 
 function last(array){

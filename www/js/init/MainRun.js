@@ -3,6 +3,7 @@ if(!window.cordova && !window.device)
     new AppShim();
 
 //note: the view models have to be global in order for kendo to see them
+StatusBar = null;
 healthGraph = null;
 
 proxy = new Proxy(new Http());
@@ -12,6 +13,7 @@ DEVICE = new Device(function initViewModels(){
     proxy.getUserData(1234, function(userData){
 
         console.log(userData);
+        console.log(DEVICE.getDebugData());
 
         healthGraph = new HealthGraph(userData).applyBindings();
 
@@ -35,6 +37,9 @@ DEVICE = new Device(function initViewModels(){
             'chart_div',
             chartOptions
         );
+
+        if(StatusBar)
+            StatusBar.hide();
     });
 
     healthGraph.slider = $("#payment-slider").kendoSlider({

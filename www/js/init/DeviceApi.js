@@ -28,7 +28,6 @@ function Device(callback){
             debugDevicePlatform: DEVICE.platform,
             debugDeviceUUID: DEVICE.uuid,
             debugDeviceVersion: DEVICE.version,
-            debugApiCameraQuality: DEVICE.cameraSettings.quality,
             debugScreenWidth: window.screen.width,
             debugScreenHeight: window.screen.height,
             debugPixelRatio: window.devicePixelRatio
