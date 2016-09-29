@@ -107,6 +107,7 @@ function HealthGraph(initData){
                 height: self.chartHeight(),
                 width: self.chartWidth(),
                 legend: {position: 'top', maxLines: 2},
+                backgroundColor: '#f7f7f7',
                 colors: ['#79c36a', '#f9a65a', '#f1595f']
             };
 

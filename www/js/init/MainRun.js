@@ -26,6 +26,7 @@ DEVICE = new Device(function initViewModels(){
                 duration: 333,
                 easing: 'out',
             },
+            backgroundColor: '#f7f7f7',
             colors: ['#79c36a', '#f9a65a', '#f1595f'] // green, orange, red
         };
 
