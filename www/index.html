@@ -84,12 +84,12 @@
 
         <div id="chart_div"></div>
 
-        <div class="container oldCentered" data-bind="visible: isHistory() || isWhatIf(), foreach: {data: paymentYears, as: 'year'}">
+        <div class="container groupCentered" data-bind="visible: isHistory() || isWhatIf(), foreach: {data: paymentYears, as: 'year'}">
             <a class="round-button" data-bind="text: year, css: {selectedRoundButton: year == $parent.selectedYear()}, click: function(){$parent.selectedYear(year);}"></a>
         </div>
 
-        <div class="container oldCentered" data-bind="visible: isSummary()">
-            <a data-role="button" class="fiftyPixelsHigh">Reminder Opt In</a>
+        <div class="container groupCentered" data-bind="visible: isSummary()">
+            <a data-role="button" class="fiftyPixelsHigh" data-bind="click: function(){window.open('http://zombo.com/', '_system', 'location=yes');}">Reminder Opt In</a>
         </div>
 
         <a data-role="button" class="wideButton" data-bind="css: {activeButton: isHistory()}, click: function(){mode('history')}">History</a>
@@ -102,7 +102,7 @@
             <input id="payment-slider" class="balSlider"/>
         </div>
 
-        <div class="container vertical" data-bind="visible: isWhatIf()">
+        <div class="container" data-bind="visible: isWhatIf()">
             <label>What if I payed <input id="payment-keyboard" type="tel" data-bind="value: monthlyPayment"> </label>
             <select class="strategy-selector" data-bind="options: whatIfStrategies, value: selectedStrategy, visible: isWhatIf()"></select>
         </div>

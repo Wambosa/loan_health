@@ -1,7 +1,5 @@
-
 .strategy-selector {
     float: right;
-    /*transform: translateY(-21px);*/
     color: darkgrey;
     font-style: italic;
     border-style: none;
@@ -11,12 +9,8 @@
     /*display: flex;*/
     /*justify-content: center;*/
 }
-.oldCentered {
+.groupCentered {
     text-align: center;
-}
-
-.vertical {
-    /*flex-direction: column;*/
 }
 
 .container input{
@@ -82,7 +76,8 @@
     background-color: yellowgreen;
 }
 
-#graph-view > div.km-content.km-widget.km-native-scroller > div:nth-child(9) > div > div > div > a {
+.km-nova .k-slider-horizontal .k-draghandle{
+    top: -15px;
     width: 35px;
     height: 35px;
     opacity: .8;

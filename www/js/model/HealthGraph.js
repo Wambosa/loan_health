@@ -6,7 +6,7 @@ function HealthGraph(initData){
     this.table = initData.paymentHistory.slice(-8).map(function(pay){
         return [
             moment(pay.date).format('MMM'),
-            pay.principal,
+            pay.principle,
             pay.interest,
             pay.fee
         ];
@@ -34,23 +34,31 @@ function HealthGraph(initData){
         refreshWhatIfView();
     });
 
-    this.whatIfStrategies = ko.observableArray([
-        "Normally Every Month",
-        "One Time Only",
-        "Every Other Month",
-        "Once a Quarter",
-        "Once a Year",
-    ]);
-    this.selectedStrategy = ko.observable("Normally Every Month");
+    this.whatIfStrategies = ko.observableArray(getPaymentStrategies());
+    this.selectedStrategy = ko.observable(first(getPaymentStrategies()));
+    this.selectedStrategy.subscribe(function(_){
+        refreshWhatIfView();
+    });
 
-    this.remainingPrincipal = initData.paymentHistory
+    this.remainingPrinciple = initData.paymentHistory
         .map(function(pay){
-            return pay.principal;
+            return pay.principle;
         }).reduce(function(a,b){return a+b;});
 
     this.activeDataSet = function(mode){
-        return mode == 'whatIf' && predictPayments(self.remainingPrincipal, initData.rate, self.monthlyPayment(), moment(last(initData.paymentHistory).date))
-        || initData.paymentHistory;
+
+        if(mode == 'whatIf')
+            return predictPayments({
+                principle: self.remainingPrinciple,
+                rate: initData.rate,
+                payment: self.monthlyPayment(),
+                defaultPayment: initData.payment,
+                fee: initData.lateFee,
+                strategy: self.selectedStrategy(),
+                lastDate: moment(last(initData.paymentHistory).date)
+            });
+
+        return initData.paymentHistory;
     };
 
     this.isHistory = ko.pureComputed(function(){return self.mode() == 'history';});
@@ -106,7 +114,9 @@ function HealthGraph(initData){
                 title: initData.name + "'s Summary",
                 height: self.chartHeight(),
                 width: self.chartWidth(),
+                chartArea:{left:25,top:50,width:'95%',height:'75%'},
                 legend: {position: 'top', maxLines: 2},
+                legendTextStyle: { color: '#a9a9a9'},
                 backgroundColor: '#f7f7f7',
                 colors: ['#79c36a', '#f9a65a', '#f1595f']
             };

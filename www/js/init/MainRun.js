@@ -22,8 +22,11 @@ DEVICE = new Device(function initViewModels(){
             isStacked: true,
             height: healthGraph.chartHeight(),
             width: healthGraph.chartWidth(),
+            chartArea:{left:25,top:50,width:'95%',height:'75%'},
             legend: {position: 'top', maxLines: 2},
-            vAxis: {minValue: 0},
+            legendTextStyle: { color: '#a9a9a9'},
+            vAxis: {minValue: 0, textStyle: {color: '#a9a9a9'}},
+            hAxis: {textStyle: {color: '#a9a9a9'}},
             animation:{
                 duration: 333,
                 easing: 'out',
@@ -52,7 +55,7 @@ DEVICE = new Device(function initViewModels(){
         value: healthGraph.monthlyPayment(),
         slide: healthGraph.onSlide.bind(healthGraph)
     }).data("kendoSlider");
-    healthGraph.slider.wrapper.css("width", "100%");
+    healthGraph.slider.wrapper.css("width", "99%");
 
     window.app = new kendo.mobile.Application(document.body, {
         layout: "home-page",
