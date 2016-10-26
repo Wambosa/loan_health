@@ -1,21 +1,18 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <title>Loan Health</title>
+	<title>Loan Health</title>
 
     <!--Boiler Plate settings-->
     <meta charset="utf-8" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="msapplication-tap-highlight" content="no" />
-    <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
-    <!--|||contentSecurityPolicy|||-->
 
-
-    <!--Style sheets-->
-    <link href="css/kendo.mobile.all.min.css" rel="stylesheet">
-    <link href="css/site.css" rel="stylesheet">
-
+	<!--Style sheets-->
+	<link href="css/kendo.mobile.all.min.css" rel="stylesheet">
+	<link href="css/site.css" rel="stylesheet">
 
     <!--LIBS-->
     <script src="js/libs/jquery.min.js"></script>
@@ -24,48 +21,49 @@
     <script src="js/libs/moment.min.js"></script>
     <script src="cordova.js"></script>
 
-
     <!--note: app code-->
     <script type="text/javascript" src="js/service/Http.js"></script>
     <script type="text/javascript" src="js/service/Proxy.js"></script>
+    <script type="text/javascript" src="js/const.js"></script>
     <script type="text/javascript" src="js/util.js"></script>
     <script type="text/javascript" src="js/model/InteractiveGraph.js"></script>
     <script type="text/javascript" src="js/model/HealthGraph.js"></script>
 
-    <!--init-->
-    <script src="js/init/AppShim.js"></script>
-    <script src="js/init/DeviceApi.js"></script>
+	<!--init-->
+	<script src="js/init/AppShim.js"></script>
+	<script src="js/init/DeviceApi.js"></script>
 
-
-    <!--Load the AJAX API-->
-    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
-</head>
-
-
-
-
-
-<body id="home-page">
+	<!--Load the AJAX API-->
+	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
     <!--INTRO SCREEN-->
-    <div id="landingPage" data-role="view" data-title="Loan Health" data-persist="true" data-use-native-scrolling="true">
+    <div id="landingPage"
+         data-role="view"
+         data-title="Loan Health">
+
         <h1 class="app-logo">Loan<br/>Health</h1>
+
         <div class="action-buttons">
-            <a href="#loginPage" class="transitions-button km-justified km-primary" data-role="button">Login</a>
+            <a data-role="button" class="transitions-button km-justified km-primary" href="#loginPage">Login</a>
         </div>
 
     </div>
 
     <!--LOGIN PAGE-->
-    <div id="loginPage" data-role="view" data-title="Loan Health Login" data-transition="overlay:up" data-persist="true" data-use-native-scrolling="true">
+    <div id="loginPage"
+         data-role="view"
+         data-title="Loan Health Login"
+         data-transition="overlay:up">
+
+        <img style="margin: 0 auto; display: block;" src="css/images/icon_transparent.png" />
+         
         <ul data-role="listview" data-style="inset">
             <li><label for="username">Username: <input type="text" id="username" /></label></li>
             <li><label for="password">Password: <input type="password" id="password" /></label></li>
         </ul>
 
         <div class="action-buttons">
-            <a href="#graph-view"
-               data-bind="click: function(){console.log(redraw); redraw();}"
+            <a href="view/account.html"
                data-transition="overlay:down reverse"
                data-role="button"
                class="km-primary km-justified transitions-button">Login</a>
@@ -74,55 +72,6 @@
         </div>
     </div>
 
-
-
-    <!--GRAPH APP-->
-    <div data-role="view" data-title="My Account" id="graph-view" data-persist="true" data-use-native-scrolling="true">
-
-        <!--Play here-->
-
-
-        <div id="chart_div"></div>
-
-        <div class="container groupCentered" data-bind="visible: isHistory() || isWhatIf(), foreach: {data: paymentYears, as: 'year'}">
-            <a class="round-button" data-bind="text: year, css: {selectedRoundButton: year == $parent.selectedYear()}, click: function(){$parent.selectedYear(year);}"></a>
-        </div>
-
-        <div class="container groupCentered" data-bind="visible: isSummary()">
-            <a data-role="button" class="fiftyPixelsHigh" data-bind="click: function(){window.open('http://zombo.com/', '_system', 'location=yes');}">Reminder Opt In</a>
-        </div>
-
-        <a data-role="button" class="wideButton" data-bind="css: {activeButton: isHistory()}, click: function(){mode('history')}">History</a>
-        <a data-role="button" class="wideButton" data-bind="css: {activeButton: isSummary()}, click: function(){mode('summary')}">Summary</a>
-        <a data-role="button" class="wideButton" data-bind="css: {activeButton: isWhatIf()}, click: function(){mode('whatIf')}">What If I...</a>
-
-        <div class="pretty-print" data-bind="text: helpText, css: {feelinTwentyTwo: isWhatIf()}"></div>
-
-        <div data-bind="visible: isWhatIf()">
-            <input id="payment-slider" class="balSlider"/>
-        </div>
-
-        <div class="container" data-bind="visible: isWhatIf()">
-            <label>What if I payed <input id="payment-keyboard" type="tel" data-bind="value: monthlyPayment"> </label>
-            <select class="strategy-selector" data-bind="options: whatIfStrategies, value: selectedStrategy, visible: isWhatIf()"></select>
-        </div>
-
-
-        <!--Stop Playing-->
-    </div>
-
-
-
-
-
-
-
-
-
-
-
-
-    <!--main-->
     <script type="text/javascript" src="js/init/MainRun.js"></script>
 </body>
 </html>

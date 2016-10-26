@@ -1,228 +1,303 @@
-function first(array){
+function sum(a, b) { 
+    return a + b;
+}
+
+function reverse(array) {
+    var copy = array.slice(0);
+
+    return copy.reverse();
+}
+
+function currency(num) {
+    // rounding to a specific decimal place.
+    var amount = Math.floor(Math.round((num || 0) * 100) / 100);
+    return "$ " + amount.toLocaleString("en-US");   
+}
+
+function first(array) {
     return array.slice(0, 1)[0];
 }
 
-function last(array){
+function last(array) {
     return array.slice(-1)[0];
 }
 
-function yearFilter(desiredYear){
-    return function(pay){
+function yearFilter(desiredYear) {
+    return function (pay) {
         return +desiredYear == +moment(pay.date).format("YYYY");
     }
 }
 
-function daysThisYear(year){
-    return daysBetween(year+"-01-01", year+"-12-31");
+// let's just assume it's 365?
+function daysThisYear(year) {
+    return daysBetween(year + "-01-01", year + "-12-31");
 }
 
-function daysBetween(from, to){
+function daysBetween(from, to) {
     return Math.floor(Math.abs((+moment(to) - +moment(from))) / 86400000);
 }
 
-function getTableHeaders(){
-    return ["time", "principle", "interest", "fees"];
+function paymentDateSeed(payments){
+
+    var firstDate = moment(first(payments).date);
+    var lastDate = moment(last(payments).date).startOf('month');
+
+    var paymentDict = {};
+    var paymentYears = [];
+
+    var monthCount = Math.abs(firstDate.startOf('month').diff(lastDate, 'month'));
+
+    for(var i=0;i<=monthCount;i++){
+
+        var year = firstDate.format('YYYY');
+        var month = firstDate.format('MMM');
+
+        if(paymentYears.indexOf(year) === -1)
+            paymentYears.push(year);
+
+        if(!paymentDict[year])
+            paymentDict[year] = {};
+
+        paymentDict[year][month] = {
+            principal: 0,
+            interest: 0,
+            fee: 0
+        };
+
+        firstDate.add(1, 'month');
+    }
+
+    return {
+        years: paymentYears,
+        months: months,
+        dict: paymentDict
+    };
 }
 
-function getPaymentStrategies(){
-    return [
-        "Normally Every Month",
-        "A Week Early Every Month",
-        "A Week Late Every Month",
-        "Every Other Month",
-        "One Time On Top of Normal",
-        "Replacing One Payment"
-    ];
-}
+/**
+ * Injects empty 0 payments to account for payment gaps,
+ * normalizes all payments made in a given month into a single bar.
+ *  */
+function paymentDataToArray(payments) {
 
-function paymentDataToArray(payments){
-    return payments.map(function(pay){
-        return [
-            moment(pay.date).format('MMM'),
-            pay.principle,
-            pay.interest,
-            pay.fee
-        ];
+    var dataArr = [];
+
+    var seed = paymentDateSeed(payments);
+    var dict = seed.dict;
+
+    payments.forEach(function(pay){
+        var year = moment(pay.date).format('YYYY');
+        var month = moment(pay.date).format('MMM');
+
+        dict[year][month].principal += pay.principal;
+        dict[year][month].interest += pay.interest;
+        dict[year][month].fee += pay.fee;
     });
+
+    seed.years.forEach(function(y){
+        seed.months.forEach(function(m){
+            var p = dict[y][m];
+            dataArr.push([
+                m,
+                p && p.principal || 0,
+                p && p.interest || 0,
+                p && p.fee || 0
+            ]);
+        });
+    });
+
+    return dataArr;
 }
 
-function getPaymentYears(paymentData){
+function getPaymentYears(paymentData) {
 
     var years = [];
 
-    paymentData.forEach(function(pay){
+    paymentData.forEach(function (pay) {
         var y = +moment(pay.date).format("YYYY");
-        if(years.indexOf(y) === -1)
+        if (years.indexOf(y) === -1)
             years.push(y);
     });
 
     return years;
 }
 
-function getWhatIfYears(maturityDate){
+function getWhatIfYears(maturityDate) {
     var years = [];
 
     var thisYear = +moment().format("YYYY");
     var yearsLeft = +moment(maturityDate).format("YYYY") - thisYear;
 
-    for(var i=0; i <= yearsLeft;i++)
+    for (var i = 0; i <= yearsLeft; i++)
         years.push(+thisYear + i);
 
     return years;
 }
 
-function summarize(paymentHistory){
+function summarize(paymentHistory) {
 
-    var principleTotal = 0;
+    var principalTotal = 0;
     var interestTotal = 0;
     var feeTotal = 0;
 
-    paymentHistory.forEach(function(pay){
-        principleTotal += pay.principle;
+    paymentHistory.forEach(function (pay) {
+        principalTotal += pay.principal;
         interestTotal += pay.interest;
         feeTotal += pay.fee;
     });
 
     return [
         ["area", "totalAmount"],
-        ["principle", principleTotal],
+        ["principal", principalTotal],
         ["interest", interestTotal],
         ["fee", feeTotal]
     ];
 }
 
-function predictPayments(options){
+function predictPayments(options) {
 
     var strategy = options.strategy;
 
     return {
-        "Normally Every Month": normalPayment,
-        "A Week Early Every Month": function(){
+        "Normal": getFuturePaymentPlan,
+        "A Week Early Every Month": function () {
             options.daysFromDueDate = -7;
-            return normalPayment(options);
+            return getFuturePaymentPlan(options);
         },
-        "A Week Late Every Month": function(){
+        "A Week Late Every Month": function () {
             options.daysFromDueDate = 7;
-            return normalPayment(options);
+            return getFuturePaymentPlan(options);
         },
-        "Every Other Month": everyOtherMonthPayment,
-        "One Time On Top of Normal": function(){
+        "Every Other Month": function(){
+            options.increment = 2;
+            return getFuturePaymentPlan(options);
+        },
+        "One Time On Top of Normal": function () {
             var extraAmount = options.payment;
             options.payment = options.defaultPayment;
-            options.principle -= extraAmount;
+            options.principal -= extraAmount;
             return supplementalPayment(
                 extraAmount,
-                normalPayment(options)
+                getFuturePaymentPlan(options)
             );
         },
-        "Replacing One Payment": function(){
+        "Replacing One Payment": function () {
             options.replaceOnce = true;
-            return normalPayment(options);
+            return getFuturePaymentPlan(options);
         }
 
     }[strategy](options);
 }
 
-function normalPayment(options){
+/**
+ * Given an array of payment objects, combine the total interest/principal and fees.
+ */
+function getTotalOfPayments(payments) {
+    return payments.map(function(p) {
+        return p.interest + p.principal + p.fee;
+    }).reduce(sum);
+}
 
-    var amountLeft = options.principle;
+/**
+ * This function computes the normal payment schedule, or some variation based on the options.
+ * 
+ * ex: +10 daysFromDueDate would be assessed a late fee and change the schedule.
+ * 
+ * @param options {Object} 
+ * 
+ *  */
+function getFuturePaymentPlan(options) {
+
+    // TODO: deferment calculation.
+
     var rate = options.rate;
+    var amountLeft = options.principal;
     var paymentAmount = options.payment;
-    var fromDate = options.lastDate;
+    var increment = options.increment || 1;
+    var maxMonths = options.maxMonths || 132;
+    var isReplaceFirstPayment = options.replaceOnce;
     var daysFromDueDate = options.daysFromDueDate || 0;
-
-    var dailyInterestRate = rate/daysThisYear(moment().format("YYYY"));
+    var dailyInterestRate = rate / daysThisYear(moment().format("YYYY"));
 
     var payments = [];
 
     var i = 0;
-    var maxMonths = 72;
 
-    while(amountLeft > 0 && i < maxMonths){
+    // what happens when amount left is < normal payment
+    while (amountLeft > 0 && i < maxMonths) {
 
-        if(options.replaceOnce && i > 0)
+        // optional: reset the payment back to normal after first payment
+        if (isReplaceFirstPayment && i > 0)
             paymentAmount = options.defaultPayment;
 
-        var thisMonth = moment(fromDate).add(i, 'month');
+        var thisMonth = moment().add(i, 'month');
+        var lastMonth = moment().add(i - increment, 'month');
 
-        var days = daysBetween(thisMonth, moment(fromDate).add(1+i, 'month'));
-
+        var days = daysBetween(thisMonth, lastMonth);
         var interest = (dailyInterestRate * amountLeft) * (days + daysFromDueDate);
 
-        var towardsPrinciple = Math.max(paymentAmount - interest, 0);
+        var towardsPrincipal = Math.min(amountLeft, Math.max(paymentAmount - interest, 0));
         var towardsInterest = Math.min(paymentAmount, interest);
 
-        if(daysFromDueDate > 0 || paymentAmount < options.defaultPayment)
+        // if we pay late OR if we pay less than owed. incur fee
+        if (daysFromDueDate > 0 || paymentAmount < options.defaultPayment)
             var fee = options.fee;
+
+        // ignore fee if this is the last payment
+        if (amountLeft < paymentAmount)
+            fee = 0;
 
         payments.push({
             date: thisMonth.format("YYYY-MM-DD"),
-            principle: towardsPrinciple,
+            principal: towardsPrincipal,
             interest: towardsInterest,
             fee: fee && fee || 0
         });
 
-        i++;
-        amountLeft -= towardsPrinciple;
+        i += increment;
+        amountLeft -= towardsPrincipal;
     }
 
     return payments;
 }
 
-function everyOtherMonthPayment(options){
+function predictMaturity(options) {
 
-    var skipMonth = false;
+    console.log(options);
 
-    var amountLeft = options.principle;
     var rate = options.rate;
+    var amountLeft = options.principal;
     var paymentAmount = options.payment;
-    var fromDate = options.lastDate;
+    var increment = options.increment || 1;
+    var maxMonths = options.maxMonths || 132;
+    var replace = options.replaceOnce || 0;
+    var supplement = options.supplement || 0;
     var daysFromDueDate = options.daysFromDueDate || 0;
-    var fee = options.fee;
+    var dailyInterestRate = rate / daysThisYear(moment().format("YYYY"));
 
-    var dailyInterestRate = rate/daysThisYear(moment().format("YYYY"));
+    //todo: prediction needs to attempt loose day guess based on principal
 
-    var payments = [];
+    var paymentCount = (
+        ( amountLeft + (((dailyInterestRate * amountLeft) * ((30*increment) + daysFromDueDate)) * amountLeft/paymentAmount) )
+        - supplement
+        - (replace ? replace - paymentAmount : 0)
+    )
+    / paymentAmount;
 
-    var i = 0;
-    var maxMonths = 72;
-
-    while(amountLeft > 0 && i < maxMonths){
-
-        if(!skipMonth){
-            var thisMonth = moment(fromDate).add(i, 'month');
-
-            var days = daysBetween(thisMonth, moment(fromDate).add(1+i, 'month'));
-
-            var interest = (dailyInterestRate * amountLeft) * (days + daysFromDueDate);
-
-            var towardsPrinciple = Math.max(paymentAmount - interest, 0);
-            var towardsInterest = Math.min(paymentAmount, interest);
-
-            payments.push({
-                date: thisMonth.format("YYYY-MM-DD"),
-                principle: towardsPrinciple,
-                interest: towardsInterest,
-                fee: i === 0 ? 0 : fee
-            });
-
-            amountLeft -= towardsPrinciple;
-        }
-
-        skipMonth = !skipMonth;
-        i++;
-    }
-
-    return payments;
+    return {
+        isFeasible: paymentCount <= maxMonths,
+        paymentCount: paymentCount,
+        maturityDate: moment().add(paymentCount, 'month').format("YYYY-MM-DD")
+    };
 }
 
-function supplementalPayment(extraAmount, payments){
+function supplementalPayment(extraAmount, payments) {
 
     var first = payments[0];
 
     payments.splice(1, 0, {
         date: moment(first.date).add(1, 'day').format("YYYY-MM-DD"),
-        principle: extraAmount,
+        principal: extraAmount,
         interest: 0,
         fee: 0
     });

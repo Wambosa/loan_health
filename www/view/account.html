@@ -1,0 +1,132 @@
+<div data-role="layout" data-id="account-tabstrip">
+
+	<div data-role="header">
+		<div data-role="navbar" class="km-accent">
+			<span data-role="view-title"></span>
+		</div>
+	</div>
+
+	<div data-role="footer">
+		<div data-role="tabstrip" class="custom">
+			<a href="#account-history" data-icon="bar-graph"></a>
+			<a href="#account-summary" data-icon="contacts"></a>
+			<a href="#account-whatif" data-icon="question"></a>
+			<a href="#account-settings" data-icon="settings"></a>
+		</div>
+	</div>
+</div>
+
+<div data-role="layout" data-id="payment-detail-layout">
+	<div data-role="header">
+		<div data-role="navbar" class="km-accent">
+			<a data-role="backbutton" data-align="left">Back</a>
+			<span data-role="view-title">Details</span>
+		</div>
+	</div>
+</div>
+
+<div data-role="view" id="account-history" data-title="Account History" data-layout="account-tabstrip" data-use-native-scrolling="true"
+	data-show="healthGraph.refreshView">
+
+	<div class="top-home-content" data-role="touch" data-enable-swipe="1" data-swipe="toggleHomeScreen">
+
+		<h4 data-bind="text: subtitle"></h4>
+		<h1 data-bind="text: title" class="loan-health-status good"></h1>
+	</div>
+
+	<div id="chart_div_history"></div>
+
+	<div class="container groupCentered history-year-select-row" data-bind="foreach: { data: paymentYears, as: 'year'} ">
+		<a class="year-select" data-bind="text: year, css: { selected: year == healthGraph.selectedYear() }, click: function() { healthGraph.selectedYear(year); }"></a>
+	</div>
+
+	<div class="advice panel" style="height: 33%; padding: 1em;" data-role="touch" data-enable-swipe="1" data-swipe="healthGraph.nextTip">
+		<h2 data-bind="html: currentTip"></h2>
+
+		<div style="text-align: center; margin-top: 1em;" data-bind="foreach: tipIndicators">
+			<span class="tip-indicator" data-bind="css: { 'active': $data === $parent.tipIndex() }"></span>
+		</div>
+	</div>
+
+	<ul data-role="listview">
+		<li>Payment History</li>
+		<!-- ko foreach: paymentHistory -->
+		<li>
+			<a data-bind="attr: { href: '#payment-detail?id=' + id }">
+				<span data-bind="text: date"></span>
+				<span style="float: right; margin-right: 2em;" data-bind="text: '$ ' + Math.round(principal + interest + fee)"></span>
+				<span style="float: right; margin-right: 1em; color: red;" data-bind="visible: fee > 0">!</span>
+			</a>
+		</li>
+		<!-- /ko -->
+	</ul>
+</div>
+
+<div data-role="view" id="payment-detail" data-title="Detail" data-layout="payment-detail-layout" data-use-native-scrolling="true"
+	data-show="healthGraph.loadPaymentDetails">
+	<ul data-role="listview">
+		<li>Date: <span style="float: right" data-bind="text: healthGraph.currentPaymentDate"></span></li>
+		<li>Principal: <span style="float: right" data-bind="text: healthGraph.currentPaymentPrincipal"></span></li>
+		<li>Interest: <span style="float: right" data-bind="text: healthGraph.currentPaymentInterest"></span></li>
+		<li>Fees: <span style="float: right" data-bind="text: healthGraph.currentPaymentFee"></span></li>
+	</ul>
+</div>
+
+<div data-role="view" id="account-summary" data-title="My Account Summary" data-layout="account-tabstrip" data-use-native-scrolling="true"
+	data-show="healthGraph.refreshView">
+
+	<!-- todo: make this reactive to the document. -->
+	<div id="chart_div_summary" style="width: 375; height: 375"></div>
+</div>
+
+<div data-role="view" id="account-whatif" data-title="What if" data-layout="account-tabstrip" data-use-native-scrolling="true"
+	data-show="healthGraph.refreshView">
+
+	<div class="top-home-content">
+		<h4>Amount Saved:</h4>
+		<h1 class="loan-health-status" data-bind="text: netAmountPaid, css: { 'good': whatIfStatus() === 'good', 'neutral': whatIfStatus() === 'neutral', 'bad': whatIfStatus() === 'bad' }"></h1>
+	</div>
+
+	<div id="chart_div_whatif"></div>
+
+	<div class="container groupCentered history-year-select-row" data-bind="foreach: { data: paymentYears, as: 'year'} ">
+		<a class="year-select" data-bind="text: year, css: { selected: year == healthGraph.selectedYear() }, click: function() { healthGraph.selectedYear(year); }"></a>
+	</div>
+
+	<div>
+		<input id="payment-slider" class="balSlider" />
+	</div>
+
+	<ul data-role="listview">
+		<li>
+			<label>Payment 
+                <input id="payment-keyboard" type="number" data-bind="value: monthlyPayment">
+            </label>
+		</li>
+		<li>
+			<label>Schedule
+                <select data-role="dropdown" class="strategy-selector" data-bind="options: paymentStrategies, value: selectedStrategy"></select>        
+            </label>
+		</li>
+</div>
+</div>
+
+<div data-role="view" id="account-settings" data-title="Settings" data-layout="account-tabstrip" data-use-native-scrolling="true"
+	data-show="console.log.bind(console)">
+	<ul data-role="listview" class="account-settings-list">
+		<li>Name: <span class="setting-value" data-bind="text: settings.name"></span></li>
+		<li>Vehicle: <span class="setting-value" data-bind="text: settings.vehicle"></span></li>
+		<li>Rate: <span class="setting-value" data-bind="text: settings.rate"></span></li>
+		<li>Balance: <span class="setting-value" data-bind="text: settings.principal"></span></li>
+		<li>Maturity Date: <span class="setting-value" data-bind="text: settings.maturityDate"></span></li>
+		<li>
+			<div>
+				<span>Payment Reminders: </span>
+				<a data-role="button" data-bind="click: generateCalendarReminder" class="km-button-right km-primary">Activate</a>
+			</div>
+			<p style="clear: both; padding-top: 1em;">
+				By clicking activate you are electing to download a file to your device which contains details about your payment schedule.
+			</>
+		</li>
+	</ul>
+</div>

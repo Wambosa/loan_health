@@ -35,17 +35,18 @@
     border-radius: 50%;
     text-align:center;
     text-decoration:none;
-    color: #18b7ff!important;
+    color: #ff4350 !important;
     background: white;
     font-size:12px;
     font-weight:bold;
     margin-top: 5px;
     margin-bottom: 5px;
+    border: solid 1px;
 }
 
 .selectedRoundButton {
-    color: white!important;
-    background: #18b7ff;
+    color: white !important;
+    background: #ff4350;
 }
 
 .pretty-print {
@@ -61,19 +62,18 @@
     height: 28vh;
 }
 
-.feelinTwentyTwo{
+.feelinTwentyTwo {
     height: 20vh;
 }
 
-.fiftyPixelsHigh{
+.fiftyPixelsHigh {
     height: 47px;
     font-size: medium;
     font-weight: bold;
 }
 
-
 .k-slider .k-slider-selection {
-    background-color: yellowgreen;
+    background-color: #ff4350;
 }
 
 .km-nova .k-slider-horizontal .k-draghandle{
@@ -102,7 +102,7 @@ a.wideButton.km-widget.km-button {
     margin: 0 0 0 0;
     margin-bottom: 10px;
     padding-top: 10%;
-    color: #18b7ff;
+    color: #ff4350;
     background-color: white;
     border: none;
     border-radius: 15px;
@@ -111,15 +111,13 @@ a.wideButton.km-widget.km-button {
 
 a.wideButton.km-widget.km-button.activeButton {
     color: #fff;
-    background-color: #18b7ff;
-    box-shadow: 0 5px #27496d;
+    background-color: #ff4350;
     transform: translateY(5px);
 }
 
 #payment-keyboard{
-    width: 15%;
+    width: 25%;
     text-align: center;
-    border-style: dotted;
     font-weight: bold;
     font-size: medium;
     color: yellowgreen;
@@ -131,4 +129,85 @@ a.wideButton.km-widget.km-button.activeButton {
 
 #graph-view > div.km-content.km-widget.km-native-scroller{
     background-color: #f7f7f7;
+}
+
+.km-bar-graph:before,
+.km-bar-graph:after {
+    content: "\e04b";
+}
+
+.km-question:before,
+.km-question:after {
+    content: "\e0fb";
+}
+
+.top-home-content {
+    height: 12%;
+}
+
+/* todo: making them inline block is a little screwy. */
+.top-home-content * {
+    text-align: center;
+    margin: 0;
+}
+
+h1.loan-health-status {
+    margin: 0;
+    font-size: 3em;
+    font-weight: 100;
+    text-transform: uppercase;
+    line-height: .9em;
+}
+
+.loan-health-status.good {
+    color: Green;
+}
+
+.loan-health-status.neutral {
+    color: black;
+}
+
+.loan-health-status.bad {
+    color: Red;
+}
+
+.history-year-select-row {
+    margin-top: 0.5em;
+    margin-bottom: 2em;
+}
+
+.year-select {
+    margin: 0 0.2em;
+    padding: 0 0.25em;
+}
+
+.year-select.selected { 
+    border-bottom: solid 2px #ff4350;
+}
+
+/* todo: can't do the nice glossy transparency thing. */
+.km-nova .km-tabstrip.custom {
+    min-height: 3rem;
+}
+
+.account-settings-list span.setting-value { 
+    float: right; 
+    margin-right: 1em
+}
+
+
+.km-nova .km-list > li > .km-listview-link {
+    color: black;
+}
+
+.tip-indicator {
+    display: inline-block;
+    border-radius: 4px; 
+    height: 8px; 
+    width: 8px;
+    background-color: lightgray;
+}
+
+.tip-indicator.active {
+    background-color: #ff4350;
 }
