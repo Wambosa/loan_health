@@ -12,7 +12,7 @@ proxy = new Proxy(new Http());
 
 DEVICE = new Device(function initViewModels(){
 
-    proxy.getUserData(9000, function(userData){
+    proxy.getUserData(1111, function(userData){
 
         healthGraph = new HealthGraph(userData);
 

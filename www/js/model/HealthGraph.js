@@ -1,316 +1,319 @@
 function HealthGraph(initData) {
 
-    var self = this;
+	var self = this;
 
-    this.mode = ko.observable(APPMODE.HISTORY);
+	this.mode = ko.observable(APPMODE.HISTORY);
 
-    this.settings = {
-        name: initData.name,
-        vehicle: initData.vehicle,
-        rate: "" + initData.rate + " %",
-        payment: currency(initData.payment),
-        principal: initData.principal,
-        maturityDate: initData.maturityDate
-    };
+	this.settings = {
+		name: initData.name,
+		vehicle: initData.vehicle,
+		rate: "" + (initData.rate*100) + " %",
+		payment: currency(initData.payment),
+		principal: initData.principal,
+		maturityDate: initData.maturityDate
+	};
 
-    this.charts = {};
-    this.charts[APPMODE.HISTORY] = new InteractiveGraph();
-    this.charts[APPMODE.SUMMARY] = new InteractiveGraph();
-    this.charts[APPMODE.WHATIF] = new InteractiveGraph();
+	this.charts = {};
+	this.charts[APPMODE.HISTORY] = new InteractiveGraph();
+	this.charts[APPMODE.SUMMARY] = new InteractiveGraph();
+	this.charts[APPMODE.WHATIF] = new InteractiveGraph();
 
-    this.setCurrentPayment = function (item) {
-        self.currentPaymentDate(item.date);
-        self.currentPaymentPrincipal('$ ' + item.principal);
-        self.currentPaymentInterest('$ ' + item.interest);
-        self.currentPaymentFee('$ ' + item.fee);
-    };
+	this.setCurrentPayment = function (item) {
+		self.currentPaymentDate(item.date);
+		self.currentPaymentPrincipal('$ ' + item.principal);
+		self.currentPaymentInterest('$ ' + item.interest);
+		self.currentPaymentFee('$ ' + item.fee);
+	};
 
-    this.whatIfStatus = ko.observable("neutral");
-       
-    this.currentPaymentDate = ko.observable();
-    this.currentPaymentPrincipal = ko.observable();
-    this.currentPaymentInterest = ko.observable();
-    this.currentPaymentFee = ko.observable();
+	this.whatIfStatus = ko.observable("neutral");
 
-    this.setCurrentPayment(initData.paymentHistory[0]);
+	this.currentPaymentDate = ko.observable();
+	this.currentPaymentPrincipal = ko.observable();
+	this.currentPaymentInterest = ko.observable();
+	this.currentPaymentFee = ko.observable();
 
-    var updateDataTable = function (desiredYear) {
-        self.activeChart().table = paymentDataToArray(self.activeDataSet(self.mode())
-            .filter(yearFilter(desiredYear)));
+	this.setCurrentPayment(initData.paymentHistory[0]);
 
-        self.activeChart().table.unshift(chartHeaders);
-        self.activeChart().reDraw();
-    };
+	var updateDataTable = function (desiredYear) {
+		self.activeChart().table = paymentDataToArray(self.activeDataSet(self.mode())
+			.filter(yearFilter(desiredYear)));
 
-    // for display in a detailed list view.
-    this.paymentHistory = reverse(initData.paymentHistory);
-    this.paymentYears = ko.observableArray(getPaymentYears(initData.paymentHistory));
-    this.selectedYear = ko.observable(last(this.paymentYears));
-    this.selectedYear.subscribe(function (newYear) {
-        updateDataTable(newYear);
-    });
+		self.activeChart().table.unshift(chartHeaders);
+		self.activeChart().reDraw();
+	};
 
-    this.slider = null;
-    var minimumPayment = initData.payment * .5;
-    this.monthlyPayment = ko.observable(initData.payment);
-    this.monthlyPayment.subscribe(function (val) {
-        if(val < minimumPayment)
-            self.monthlyPayment(minimumPayment);
+	// for display in a detailed list view.
+	this.paymentHistory = reverse(initData.paymentHistory);
+	this.paymentYears = ko.observableArray(getPaymentYears(initData.paymentHistory));
+	this.selectedYear = ko.observable(last(this.paymentYears));
+	this.selectedYear.subscribe(function (newYear) {
+		updateDataTable(newYear);
+	});
 
-        self.slider.value(val);
-        refreshWhatIfView();
-    });
+	this.slider = null;
+	var minimumPayment = roundDecimal(initData.payment * .5);
+	this.isPaidOff = ko.observable(initData.principal <= 0);
+	this.monthlyPayment = ko.observable(initData.payment);
+	this.monthlyPayment.subscribe(function (val) {
+		if(val < minimumPayment)
+			self.monthlyPayment(minimumPayment);
 
-    this.selectedStrategy = ko.observable(first(paymentStrategies));
-    this.selectedStrategy.subscribe(function (_) {
-        refreshWhatIfView();
-    });
+		self.slider.value(val);
+		refreshWhatIfView();
+	});
 
-    // a poor man's carosel.
-    this.nextTip = function(e) {
+	this.selectedStrategy = ko.observable(first(paymentStrategies));
+	this.selectedStrategy.subscribe(function (_) {
+		refreshWhatIfView();
+	});
 
-        var offset = 0;
-        if (e.direction === 'left') offset = 1;
-        else if (e.direction === 'right') offset = -1;
-        
-        if (offset !== 0) {
-            var next = self.tipIndex() + offset;
+	// a poor man's carosel.
+	this.nextTip = function(e) {
 
-            if (next > tips.length - 1) next = 0;
-            if (next < 0) next = tips.length - 1;
+		var offset = 0;
+		if (e.direction === 'left') offset = 1;
+		else if (e.direction === 'right') offset = -1;
 
-            self.tipIndex(next);
+		if (offset !== 0) {
+			var next = self.tipIndex() + offset;
 
-            self.currentTip(tips[self.tipIndex()]);
-        }
-    };
+			if (next > tips.length - 1) next = 0;
+			if (next < 0) next = tips.length - 1;
 
-    this.tipIndex = ko.observable(0);
-    this.currentTip = ko.observable(tips[0]);
-    this.tipIndicators = tips.map(function(t, i) { return i; });
+			self.tipIndex(next);
 
-    this.title = "good";
-    this.subtitle = "My LoanHealth:";
-    this.toggleHomeScreen = function() {
-        // todo: something, show the balance, health, etc.
-    }
+			self.currentTip(tips[self.tipIndex()]);
+		}
+	};
 
-    this.generateCalendarReminder = function() {
-        window.open("https://s3.amazonaws.com/scusa-compare-solutions/data/myevents.ics", "_system")
-    };
+	this.tipIndex = ko.observable(0);
+	this.currentTip = ko.observable(tips[0]);
+	this.tipIndicators = tips.map(function(t, i) { return i; });
 
-    var remainingPrincipal = initData.principal - (initData.paymentHistory
-        .map(function (pay) {
-            return pay.principal;
-        }).reduce(function (a, b) { return a + b; }));
+	this.title = "good";
+	this.subtitle = "My LoanHealth:";
+	this.toggleHomeScreen = function() {
+		// todo: something, show the balance, health, etc.
+	};
 
-    this.activeDataSet = function (mode) {
+	this.generateCalendarReminder = function() {
+		window.open("https://s3.amazonaws.com/scusa-compare-solutions/data/myevents.ics", "_system", "location=yes")
+	};
 
-        if (mode == APPMODE.WHATIF)
-            return predictPayments({
-                principal: remainingPrincipal,
-                rate: initData.rate,
-                payment: self.monthlyPayment(),
-                defaultPayment: initData.payment,
-                fee: initData.lateFee,
-                strategy: self.selectedStrategy()
-            });
+	this.remainingPrincipal = Math.max(0, initData.principal - (initData.paymentHistory
+		.map(function (pay) {
+			return pay.principal;
+		}).reduce(sum)));
 
-        return initData.paymentHistory;
-    };
+	this.activeDataSet = function (mode) {
 
-    this.activeChart = function(){
-        return this.charts[this.mode()];
-    };
+		if (mode == APPMODE.WHATIF)
+			return predictPayments({
+				principal: this.remainingPrincipal,
+				rate: initData.rate,
+				payment: self.monthlyPayment(),
+				defaultPayment: initData.payment,
+				fee: initData.lateFee,
+				strategy: self.selectedStrategy()
+			});
 
-    this.netAmountPaid = ko.observable(currency(0));
+		return initData.paymentHistory;
+	};
 
-    // todo: this might be stupid. freezing the object. lol
-    var defaultChartOptions = Object.freeze({
-        height: Math.floor(window.screen.height * 0.4),
-        width: window.screen.width,
-        chartArea: {
-            left: 25,
-            right: 25,
-            top: 50,
-            width: Math.floor(window.screen.width * 0.9),
-            height: Math.floor(window.screen.height * 0.4)
-        },
-        legend: { position: 'none' },
-        backgroundColor: '#fff',
-        colors: ['#B44C54', '#C66970', '#EAA9AE']
-    });
+	this.activeChart = function(){
+		return this.charts[this.mode()];
+	};
 
-    this.onSlide = function (sliderEvent) {
-        this.monthlyPayment(sliderEvent.value);
-    };
+	this.netAmountPaid = ko.observable(currency(0));
 
-    function refreshWhatIfView() {
+	// todo: this might be stupid. freezing the object. lol
+	var defaultChartOptions = Object.freeze({
+		height: Math.floor(window.screen.height * 0.4),
+		width: window.screen.width,
+		chartArea: {
+			left: 25,
+			right: 25,
+			top: 50,
+			width: Math.floor(window.screen.width * 0.9),
+			height: Math.floor(window.screen.height * 0.4)
+		},
+		legend: { position: 'none' },
+		backgroundColor: '#fff',
+		colors: ['#B44C54', '#C66970', '#EAA9AE']
+	});
 
-        var whatIfSet = self.activeDataSet(APPMODE.WHATIF);
-        var probableMaturity = moment(last(whatIfSet).date);
+	this.onSlide = function (sliderEvent) {
+		this.monthlyPayment(sliderEvent.value);
+	};
 
-        // check this out (its very close, but not quite perfect yet)
-        console.log(predictMaturity({
-            principal: remainingPrincipal,
-            rate: initData.rate,
-            payment: self.selectedStrategy() == "Replacing One Payment" ? initData.payment : self.monthlyPayment(),
-            replace: self.selectedStrategy() == "Replacing One Payment" && self.monthlyPayment()
-        }), 'vs', whatIfSet.length);
+	function refreshWhatIfView() {
 
-        self.paymentYears(getWhatIfYears(probableMaturity));
-        self.selectedYear(first(self.paymentYears()));
+		var whatIfSet = self.activeDataSet(APPMODE.WHATIF);
 
-        // we can calculate the amount gain/loss based on the new strategy vs the normal schedule.
-        var normal = predictPayments({
-            principal: remainingPrincipal,
-            rate: initData.rate,
-            payment: initData.payment,
-            defaultPayment: initData.payment,
-            fee: initData.lateFee,
-            strategy: "Normal"
-        });
+		// todo: this is a lazy fix. unhack
+		if(whatIfSet.length <= 0){
+			self.whatIfStatus('You Win');
+			self.isPaidOff(true);
 
-        var normalTotal = getTotalOfPayments(normal);
-        var whatIfTotal = getTotalOfPayments(whatIfSet);
+		}else{
 
-        if(whatIfSet.length >= 132 && whatIfTotal < normalTotal)
-            whatIfTotal = initData.principal * 2.5;
+			var probableMaturity = moment(last(whatIfSet).date);
 
-        var net = normalTotal - whatIfTotal;
+			// check this out (its very close, but not quite perfect yet)
+			console.log(predictMaturity({
+				principal: self.remainingPrincipal,
+				rate: initData.rate,
+				payment: self.selectedStrategy() == "Replacing One Payment" ? initData.payment : self.monthlyPayment(),
+				replace: self.selectedStrategy() == "Replacing One Payment" && self.monthlyPayment()
+			}), 'vs', whatIfSet.length);
 
-        self.whatIfStatus( (net < 0) 
-                ? "bad" 
-                : (net === 0) 
-                    ? "neutral" 
-                    : "good");
-        
-        // todo: call this SAVED.
-        self.netAmountPaid(currency(net));
+			self.paymentYears(getWhatIfYears(probableMaturity));
+			self.selectedYear(first(self.paymentYears()));
 
-        updateDataTable(self.selectedYear());
-    }
+			// we can calculate the amount gain/loss based on the new strategy vs the normal schedule.
+			var normal = predictPayments({
+				principal: self.remainingPrincipal,
+				rate: initData.rate,
+				payment: initData.payment,
+				defaultPayment: initData.payment,
+				fee: initData.lateFee,
+				strategy: "Normal"
+			});
 
-    // todo: subscribe to the orientation change??
-    this.mode.subscribe(function () {
-        self.refreshChart();
-    });
+			var normalTotal = getTotalOfPayments(normal);
+			var whatIfTotal = getTotalOfPayments(whatIfSet);
 
-    this.refreshChart = function(){
-        var chartOptions = {};
+			if(whatIfSet.length >= 132 && whatIfTotal < normalTotal)
+				whatIfTotal = initData.principal * 2.5;
 
-        if (this.mode() == APPMODE.SUMMARY) {
-            // needs to be the same.
-            var w = Math.floor(window.screen.width * 0.85);
-            $.extend(chartOptions, defaultChartOptions, {
-                chartArea: { width: w, height: w },
-                legend: {
-                    position: 'bottom',
-                    alignment: 'center',
-                    textStyle: {
-                        fontSize: 11,
-                        color: '#a9a9a9'
-                    }
-                },
-                pieHole: 0.4
-            });
+			var net = normalTotal - whatIfTotal;
 
-            self.activeChart().draw(
-                'PieChart',
-                'chart_div_summary',
-                chartOptions,
-                summarize(self.activeDataSet())
-            );
+			self.whatIfStatus( (net < 0)
+				? "bad"
+				: (net === 0)
+				? "neutral"
+				: "good");
 
-        } else {
+			// todo: call this SAVED.
+			self.netAmountPaid(currency(net));
 
-            // both what-if and history share the same settings.
-            $.extend(chartOptions, defaultChartOptions, {
-                isStacked: true,
-                vAxis: { minValue: 0, textStyle: { color: '#a9a9a9' } },
-                hAxis: { textStyle: { color: '#a9a9a9' } },
-                animation: {
-                    duration: 333,
-                    easing: 'out',
-                }
-            });
+			updateDataTable(self.selectedYear());
+		}
+	}
 
-            if(this.mode() == APPMODE.HISTORY) {
-                self.activeChart().draw(
-                    'ColumnChart',
-                    'chart_div_history',
-                    chartOptions
-                );
+	this.refreshChart = function(){
+		var chartOptions = {};
 
-                var ds = self.activeDataSet(APPMODE.HISTORY);
+		if (self.mode() == APPMODE.SUMMARY) {
+			// needs to be the same.
+			$.extend(chartOptions, defaultChartOptions, {
+				height: Math.floor(window.screen.height * 0.5),
+				chartArea: {
+					top: 25,
+					bottom: 50,
+					width:'95%',
+					height:'100%'
+				},
+				legend: 'bottom',
+				pieSliceText: 'label',
+				pieHole: 0.4
+			});
 
-                self.paymentYears(getPaymentYears(ds));
-                self.selectedYear(moment(last(ds).date).format("YYYY"));
+			self.activeChart().draw(
+				'PieChart',
+				'chart_div_summary',
+				chartOptions,
+				summarize(self.activeDataSet())
+			);
 
-            }else if (this.mode() == APPMODE.WHATIF) {
-                self.activeChart().draw(
-                    'ColumnChart',
-                    'chart_div_whatif',
-                    chartOptions
-                );
+		} else {
 
-                refreshWhatIfView();
+			// both what-if and history share the same settings.
+			$.extend(chartOptions, defaultChartOptions, {
+				isStacked: true,
+				vAxis: { minValue: 0, textStyle: { color: '#a9a9a9' } },
+				hAxis: { textStyle: { color: '#a9a9a9' } },
+				animation: {
+					duration: 333,
+					easing: 'out',
+				}
+			});
 
-                window.setTimeout(function () {
-                    self.slider.resize();
-                }, 10);
-            }
-        }
-    };
+			if(self.mode() == APPMODE.HISTORY) {
+				self.activeChart().draw(
+					'ColumnChart',
+					'chart_div_history',
+					chartOptions
+				);
 
-    self.loadPaymentDetails = function (e) {
-        var id = e.view.params.id;
+				var ds = self.activeDataSet(APPMODE.HISTORY);
 
-        for (var i = 0; i < initData.paymentHistory.length; i++) {
-            var item = initData.paymentHistory[i];
+				self.paymentYears(getPaymentYears(ds));
+				self.selectedYear(moment(last(ds).date).format("YYYY"));
 
-            if (item.id == id) {
-                self.setCurrentPayment(item);
-                break;
-            }
-        }
-    };
+			}else if (self.mode() == APPMODE.WHATIF) {
+				self.activeChart().draw(
+					'ColumnChart',
+					'chart_div_whatif',
+					chartOptions
+				);
 
-    this.refreshView = function () {
-        if (!self.isViewInitialized) {
-            self.isViewInitialized = true;
+				refreshWhatIfView();
 
-            ko.applyBindings(self);
+				window.setTimeout(function () {
+					self.slider.resize();
+				}, 10);
+			}
+		}
+	};
 
-            app.view().footer.find('.km-tabstrip').data('kendoMobileTabStrip').bind('select', function (e) {
-                switch ($(e.item).index()) {
-                    case 0: self.mode(APPMODE.HISTORY); break;
-                    case 1: self.mode(APPMODE.SUMMARY); break;
-                    case 2: self.mode(APPMODE.WHATIF); break;
-                }
-            });
+	self.loadPaymentDetails = function (e) {
+		var id = e.view.params.id;
 
-            self.slider = $('#payment-slider').kendoSlider({
-                increaseButtonTitle: 'Right',
-                decreaseButtonTitle: 'Left',
-                min: minimumPayment,
-                max: initData.payment * 5,
-                smallStep: 50,
-                largeStep: 100,
-                value: healthGraph.monthlyPayment(),
-                slide: healthGraph.onSlide.bind(healthGraph)
-            }).data('kendoSlider');
+		for (var i = 0; i < initData.paymentHistory.length; i++) {
+			var item = initData.paymentHistory[i];
 
-            self.slider.wrapper.css('width', '99%');
+			if (item.id == id) {
+				self.setCurrentPayment(item);
+				break;
+			}
+		}
+	};
 
-            self.activeChart().table = paymentDataToArray(initData.paymentHistory);
-            self.activeChart().table.unshift(chartHeaders);
-            self.refreshChart();
-        }
-        // todo: reset slider here (and other UI artifacts caused by SPA state changes)
-    };
+	this.initializeView = function () {
+		if (!self.isViewInitialized) {
+			self.isViewInitialized = true;
 
-    return this;
+			ko.applyBindings(self);
+
+			app.view().footer.find('.km-tabstrip').data('kendoMobileTabStrip').bind('select', function (e) {
+				switch ($(e.item).index()) {
+					case 0: self.mode(APPMODE.HISTORY); break;
+					case 1: self.mode(APPMODE.SUMMARY); break;
+					case 2: self.mode(APPMODE.WHATIF); break;
+				}
+			});
+
+			self.slider = $('#payment-slider').kendoSlider({
+				increaseButtonTitle: 'Right',
+				decreaseButtonTitle: 'Left',
+				min: minimumPayment,
+				max: roundDecimal(initData.payment * 5),
+				smallStep: 50,
+				largeStep: 100,
+				value: healthGraph.monthlyPayment(),
+				slide: healthGraph.onSlide.bind(healthGraph)
+			}).data('kendoSlider');
+
+			self.slider.wrapper.css('width', '99%');
+
+			self.activeChart().table = paymentDataToArray(initData.paymentHistory);
+			self.activeChart().table.unshift(chartHeaders);
+			self.refreshChart();
+		}
+	};
+
+	return this;
 }
 
 HealthGraph.prototype.constructor = HealthGraph;

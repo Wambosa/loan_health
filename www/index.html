@@ -4,30 +4,30 @@
 <head>
 	<title>Loan Health</title>
 
-    <!--Boiler Plate settings-->
-    <meta charset="utf-8" />
-    <meta name="format-detection" content="telephone=no" />
-    <meta name="msapplication-tap-highlight" content="no" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
+	<!--Boiler Plate settings-->
+	<meta charset="utf-8" />
+	<meta name="format-detection" content="telephone=no" />
+	<meta name="msapplication-tap-highlight" content="no" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" />
 
 	<!--Style sheets-->
 	<link href="css/kendo.mobile.all.min.css" rel="stylesheet">
 	<link href="css/site.css" rel="stylesheet">
 
-    <!--LIBS-->
-    <script src="js/libs/jquery.min.js"></script>
-    <script src="js/libs/kendo.all.min.js"></script>
-    <script src="js/libs/knockout-3.4.0.js"></script>
-    <script src="js/libs/moment.min.js"></script>
-    <script src="cordova.js"></script>
+	<!--LIBS-->
+	<script src="js/libs/jquery.min.js"></script>
+	<script src="js/libs/kendo.all.min.js"></script>
+	<script src="js/libs/knockout-3.4.0.js"></script>
+	<script src="js/libs/moment.min.js"></script>
+	<script src="cordova.js"></script>
 
-    <!--note: app code-->
-    <script type="text/javascript" src="js/service/Http.js"></script>
-    <script type="text/javascript" src="js/service/Proxy.js"></script>
-    <script type="text/javascript" src="js/const.js"></script>
-    <script type="text/javascript" src="js/util.js"></script>
-    <script type="text/javascript" src="js/model/InteractiveGraph.js"></script>
-    <script type="text/javascript" src="js/model/HealthGraph.js"></script>
+	<!--note: app code-->
+	<script type="text/javascript" src="js/service/Http.js"></script>
+	<script type="text/javascript" src="js/service/Proxy.js"></script>
+	<script type="text/javascript" src="js/const.js"></script>
+	<script type="text/javascript" src="js/util.js"></script>
+	<script type="text/javascript" src="js/model/InteractiveGraph.js"></script>
+	<script type="text/javascript" src="js/model/HealthGraph.js"></script>
 
 	<!--init-->
 	<script src="js/init/AppShim.js"></script>
@@ -36,42 +36,42 @@
 	<!--Load the AJAX API-->
 	<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
 
-    <!--INTRO SCREEN-->
-    <div id="landingPage"
-         data-role="view"
-         data-title="Loan Health">
+	<!--INTRO SCREEN-->
+	<div id="landingPage"
+		 data-role="view"
+		 data-title="Loan Health">
 
-        <h1 class="app-logo">Loan<br/>Health</h1>
+		<h1 class="app-logo">Loan<br/>Health</h1>
 
-        <div class="action-buttons">
-            <a data-role="button" class="transitions-button km-justified km-primary" href="#loginPage">Login</a>
-        </div>
+		<div class="action-buttons">
+			<a data-role="button" class="transitions-button km-justified km-primary" href="#loginPage">Login</a>
+		</div>
 
-    </div>
+	</div>
 
-    <!--LOGIN PAGE-->
-    <div id="loginPage"
-         data-role="view"
-         data-title="Loan Health Login"
-         data-transition="overlay:up">
+	<!--LOGIN PAGE-->
+	<div id="loginPage"
+		 data-role="view"
+		 data-title="Loan Health Login"
+		 data-transition="overlay:up">
 
-        <img style="margin: 0 auto; display: block;" src="css/images/icon_transparent.png" />
-         
-        <ul data-role="listview" data-style="inset">
-            <li><label for="username">Username: <input type="text" id="username" /></label></li>
-            <li><label for="password">Password: <input type="password" id="password" /></label></li>
-        </ul>
+		<img style="margin: 0 auto; display: block;" src="css/images/icon_transparent.png" />
 
-        <div class="action-buttons">
-            <a href="view/account.html"
-               data-transition="overlay:down reverse"
-               data-role="button"
-               class="km-primary km-justified transitions-button">Login</a>
-            <br/>
-            <a href="#landingPage" data-transition="overlay:up reverse" data-role="button" class="km-justified transitions-cancel">Cancel</a>
-        </div>
-    </div>
+		<ul data-role="listview" data-style="inset">
+			<li><label for="username">Username: <input type="text" id="username" /></label></li>
+			<li><label for="password">Password: <input type="password" id="password" /></label></li>
+		</ul>
 
-    <script type="text/javascript" src="js/init/MainRun.js"></script>
+		<div class="action-buttons">
+			<a href="view/account.html"
+			   data-transition="overlay:down reverse"
+			   data-role="button"
+			   class="km-primary km-justified transitions-button">Login</a>
+			<br/>
+			<a href="#landingPage" data-transition="overlay:up reverse" data-role="button" class="km-justified transitions-cancel">Cancel</a>
+		</div>
+	</div>
+
+	<script type="text/javascript" src="js/init/MainRun.js"></script>
 </body>
 </html>

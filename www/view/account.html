@@ -26,7 +26,8 @@
 </div>
 
 <div data-role="view" id="account-history" data-title="Account History" data-layout="account-tabstrip" data-use-native-scrolling="true"
-	data-show="healthGraph.refreshView">
+	data-show="healthGraph.initializeView"
+	 data-after-show="healthGraph.refreshChart">
 
 	<div class="top-home-content" data-role="touch" data-enable-swipe="1" data-swipe="toggleHomeScreen">
 
@@ -73,21 +74,29 @@
 </div>
 
 <div data-role="view" id="account-summary" data-title="My Account Summary" data-layout="account-tabstrip" data-use-native-scrolling="true"
-	data-show="healthGraph.refreshView">
+     data-after-show="healthGraph.refreshChart">
 
-	<!-- todo: make this reactive to the document. -->
-	<div id="chart_div_summary" style="width: 375; height: 375"></div>
+	<!-- TODO: i just borrowed this from the what if. set it apart and customize-->
+	<div class="top-home-content">
+		<h4>Remaining:</h4>
+		<h1 class="loan-health-status" data-bind="visible: !isPaidOff(), text: remainingPrincipal, css: { 'good': whatIfStatus() === 'good', 'neutral': whatIfStatus() === 'neutral', 'bad': whatIfStatus() === 'bad' }"></h1>
+		<h1 class="loan-health-status good" data-bind="visible: isPaidOff, text: whatIfStatus"></h1>
+	</div>
+
+	<div id="chart_div_summary"></div>
 </div>
 
 <div data-role="view" id="account-whatif" data-title="What if" data-layout="account-tabstrip" data-use-native-scrolling="true"
-	data-show="healthGraph.refreshView">
+	data-show="healthGraph.refreshChart">
 
 	<div class="top-home-content">
 		<h4>Amount Saved:</h4>
-		<h1 class="loan-health-status" data-bind="text: netAmountPaid, css: { 'good': whatIfStatus() === 'good', 'neutral': whatIfStatus() === 'neutral', 'bad': whatIfStatus() === 'bad' }"></h1>
+		<h1 class="loan-health-status" data-bind="visible: !isPaidOff(), text: netAmountPaid, css: { 'good': whatIfStatus() === 'good', 'neutral': whatIfStatus() === 'neutral', 'bad': whatIfStatus() === 'bad' }"></h1>
+		<h1 class="loan-health-status good" data-bind="visible: isPaidOff, text: whatIfStatus"></h1>
 	</div>
 
-	<div id="chart_div_whatif"></div>
+	<div id="chart_div_whatif" data-bind="visible: !isPaidOff()"></div>
+	<div class="empty-chart" data-bind="visible: isPaidOff"></div>
 
 	<div class="container groupCentered history-year-select-row" data-bind="foreach: { data: paymentYears, as: 'year'} ">
 		<a class="year-select" data-bind="text: year, css: { selected: year == healthGraph.selectedYear() }, click: function() { healthGraph.selectedYear(year); }"></a>
@@ -108,7 +117,7 @@
                 <select data-role="dropdown" class="strategy-selector" data-bind="options: paymentStrategies, value: selectedStrategy"></select>        
             </label>
 		</li>
-</div>
+	</ul>
 </div>
 
 <div data-role="view" id="account-settings" data-title="Settings" data-layout="account-tabstrip" data-use-native-scrolling="true"
@@ -126,7 +135,7 @@
 			</div>
 			<p style="clear: both; padding-top: 1em;">
 				By clicking activate you are electing to download a file to your device which contains details about your payment schedule.
-			</>
+			</p>
 		</li>
 	</ul>
 </div>
