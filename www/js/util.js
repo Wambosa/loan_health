@@ -165,29 +165,41 @@ function predictPayments(options) {
 
 	return {
 		"Normal": getFuturePaymentPlan,
+		
 		"A Week Early Every Month": function () {
 			options.daysFromDueDate = -7;
 			return getFuturePaymentPlan(options);
 		},
+
 		"A Week Late Every Month": function () {
 			options.daysFromDueDate = 7;
 			return getFuturePaymentPlan(options);
 		},
-		"Every Other Month": function(){
+
+		"Every Other Month": function() {
 			options.increment = 2;
 			return getFuturePaymentPlan(options);
 		},
+
 		"One Time On Top of Normal": function () {
 			var extraAmount = options.payment;
 			options.payment = options.defaultPayment;
 			options.principal -= extraAmount;
+
 			return supplementalPayment(
 				extraAmount,
 				getFuturePaymentPlan(options)
 			);
 		},
+
 		"Replacing One Payment": function () {
 			options.replaceOnce = true;
+			return getFuturePaymentPlan(options);
+		},
+
+		"Two Month Deferment": function() {
+			options.defermentMonths = 2;
+
 			return getFuturePaymentPlan(options);
 		}
 
@@ -213,23 +225,41 @@ function getTotalOfPayments(payments) {
  *  */
 function getFuturePaymentPlan(options) {
 
-	// TODO: deferment calculation.
-
 	var rate = options.rate;
 	var amountLeft = options.principal;
-	var paymentAmount = options.payment;
 	var increment = options.increment || 1;
 	var maxMonths = options.maxMonths || 132;
+	var paymentAmount = options.payment;
 	var isReplaceFirstPayment = options.replaceOnce;
 	var daysFromDueDate = options.daysFromDueDate || 0;
 	var dailyInterestRate = rate / daysThisYear(moment().format("YYYY"));
-
+	
+	// this variable will persist if interest goes unpaid.
+	var unpaidInterest = 0;
 	var payments = [];
 
 	var i = 0;
 
-	// what happens when amount left is < normal payment
+	// TODO: TRIPP?
+	// fee balance... feelsBadMan
+	// todo: I think there might be some numeric precision issues going on here.
+	// we might want to address those at some point.
 	while (amountLeft > 0 && i < maxMonths) {
+
+		var paymentDeferred = options.defermentMonths > 0 
+							&& options.defermentMonths > i;
+		
+		// properly reset the payment amount variable on each iteration.
+		if (options.defermentMonths > 0) {
+			paymentAmount = options.payment;
+		}
+
+		if (paymentDeferred) {
+			paymentAmount = 0;
+		}
+
+		// 6 months at a different amount, rate is the ... same?
+		// no fees.
 
 		// optional: reset the payment back to normal after first payment
 		if (isReplaceFirstPayment && i > 0)
@@ -237,21 +267,27 @@ function getFuturePaymentPlan(options) {
 
 		var thisMonth = moment().add(i, 'month');
 		var lastMonth = moment().add(i - increment, 'month');
-
 		var days = daysBetween(thisMonth, lastMonth);
-		var interest = (dailyInterestRate * amountLeft) * (days + daysFromDueDate);
 
+		// plus any unpaid interest. interest actually accumulates fam.
+		var interest = (dailyInterestRate * amountLeft) * (days + daysFromDueDate) + unpaidInterest; 
 		var towardsPrincipal = Math.min(amountLeft, Math.max(paymentAmount - interest, 0));
 		var towardsInterest = Math.min(paymentAmount, interest);
 
 		// if we pay late OR if we pay less than owed. incur fee
+		// technically the fee is assessed at the END but for our purposes
+		// I think it's fine
 		if (daysFromDueDate > 0 || paymentAmount < options.defaultPayment)
 			var fee = options.fee;
 
-		// ignore fee if this is the last payment
-		if (amountLeft < paymentAmount)
+		// ignore fee if this is the last payment OR a deferred payment.
+		if (amountLeft < paymentAmount || paymentDeferred)
 			fee = 0;
 
+		unpaidInterest = interest - towardsInterest;
+
+		// and then this is sorta wonky... maybe we just leave fees out.
+		// otherwise we have to KNOW if they're going to be 'current'...
 		payments.push({
 			date: thisMonth.format("YYYY-MM-DD"),
 			principal: towardsPrincipal,
@@ -268,7 +304,7 @@ function getFuturePaymentPlan(options) {
 
 function predictMaturity(options) {
 
-	console.log(options);
+	// console.log(options);
 
 	var rate = options.rate;
 	var amountLeft = options.principal;

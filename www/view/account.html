@@ -29,13 +29,12 @@
 	data-show="healthGraph.initializeView"
 	 data-after-show="healthGraph.refreshChart">
 
-	<div class="top-home-content" data-role="touch" data-enable-swipe="1" data-swipe="toggleHomeScreen">
-
+	<div class="top-home-content">
 		<h4 data-bind="text: subtitle"></h4>
 		<h1 data-bind="text: title" class="loan-health-status good"></h1>
 	</div>
 
-	<div id="chart_div_history"></div>
+	<div id="chart_div_history" data-role="touch" data-enable-swipe="1" data-swipe="healthGraph.historyChartSwipe"></div>
 
 	<div class="container groupCentered history-year-select-row" data-bind="foreach: { data: paymentYears, as: 'year'} ">
 		<a class="year-select" data-bind="text: year, css: { selected: year == healthGraph.selectedYear() }, click: function() { healthGraph.selectedYear(year); }"></a>
@@ -95,7 +94,7 @@
 		<h1 class="loan-health-status good" data-bind="visible: isPaidOff, text: whatIfStatus"></h1>
 	</div>
 
-	<div id="chart_div_whatif" data-bind="visible: !isPaidOff()"></div>
+	<div id="chart_div_whatif" data-role="touch" data-enable-swipe="1" data-swipe="healthGraph.historyChartSwipe" data-bind="visible: !isPaidOff()"></div>
 	<div class="empty-chart" data-bind="visible: isPaidOff"></div>
 
 	<div class="container groupCentered history-year-select-row" data-bind="foreach: { data: paymentYears, as: 'year'} ">

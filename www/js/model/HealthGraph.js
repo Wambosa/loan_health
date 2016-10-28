@@ -7,7 +7,7 @@ function HealthGraph(initData) {
 	this.settings = {
 		name: initData.name,
 		vehicle: initData.vehicle,
-		rate: "" + (initData.rate*100) + " %",
+		rate: "" + (initData.rate * 100) + " %",
 		payment: currency(initData.payment),
 		principal: initData.principal,
 		maturityDate: initData.maturityDate
@@ -55,7 +55,7 @@ function HealthGraph(initData) {
 	this.isPaidOff = ko.observable(initData.principal <= 0);
 	this.monthlyPayment = ko.observable(initData.payment);
 	this.monthlyPayment.subscribe(function (val) {
-		if(val < minimumPayment)
+		if (val < minimumPayment)
 			self.monthlyPayment(minimumPayment);
 
 		self.slider.value(val);
@@ -67,12 +67,21 @@ function HealthGraph(initData) {
 		refreshWhatIfView();
 	});
 
-	// a poor man's carosel.
-	this.nextTip = function(e) {
-
+	// basically just saves duplication on the swipe code.
+	// left to right to swipe left looks counter-intuitive,
+	// but it's more analogous to turning a page.
+	var swipe = function (e) {
 		var offset = 0;
+
 		if (e.direction === 'left') offset = 1;
 		else if (e.direction === 'right') offset = -1;
+		
+		return offset;
+	};
+
+	this.nextTip = function (e) {
+
+		var offset = swipe(e);
 
 		if (offset !== 0) {
 			var next = self.tipIndex() + offset;
@@ -81,22 +90,37 @@ function HealthGraph(initData) {
 			if (next < 0) next = tips.length - 1;
 
 			self.tipIndex(next);
-
-			self.currentTip(tips[self.tipIndex()]);
+			self.currentTip(tips[next]);
 		}
 	};
 
 	this.tipIndex = ko.observable(0);
 	this.currentTip = ko.observable(tips[0]);
-	this.tipIndicators = tips.map(function(t, i) { return i; });
+	this.tipIndicators = tips.map(function (t, i) { return i; });
+
+	this.historyChartSwipe = function(e) {
+
+		var offset = swipe(e);
+
+		if (offset !== 0) {
+			var next = Number(self.selectedYear()) + offset;
+			var firstYear = first(self.paymentYears());
+			var lastYear = last(self.paymentYears());
+
+			if (next <= lastYear && next >= firstYear) {
+				self.selectedYear(next);
+			}
+		}
+	};
 
 	this.title = "good";
 	this.subtitle = "My LoanHealth:";
-	this.toggleHomeScreen = function() {
+	this.toggleHomeScreen = function () {
 		// todo: something, show the balance, health, etc.
 	};
 
-	this.generateCalendarReminder = function() {
+	this.generateCalendarReminder = function () {
+		// todo: this needs to actually be something real.
 		window.open("https://s3.amazonaws.com/scusa-compare-solutions/data/myevents.ics", "_system", "location=yes")
 	};
 
@@ -120,7 +144,7 @@ function HealthGraph(initData) {
 		return initData.paymentHistory;
 	};
 
-	this.activeChart = function(){
+	this.activeChart = function () {
 		return this.charts[this.mode()];
 	};
 
@@ -139,7 +163,7 @@ function HealthGraph(initData) {
 		},
 		legend: { position: 'none' },
 		backgroundColor: '#fff',
-		colors: ['#B44C54', '#C66970', '#EAA9AE']
+		colors: colors.redTones
 	});
 
 	this.onSlide = function (sliderEvent) {
@@ -151,11 +175,11 @@ function HealthGraph(initData) {
 		var whatIfSet = self.activeDataSet(APPMODE.WHATIF);
 
 		// todo: this is a lazy fix. unhack
-		if(whatIfSet.length <= 0){
+		if (whatIfSet.length <= 0) {
 			self.whatIfStatus('You Win');
 			self.isPaidOff(true);
 
-		}else{
+		} else {
 
 			var probableMaturity = moment(last(whatIfSet).date);
 
@@ -183,16 +207,16 @@ function HealthGraph(initData) {
 			var normalTotal = getTotalOfPayments(normal);
 			var whatIfTotal = getTotalOfPayments(whatIfSet);
 
-			if(whatIfSet.length >= 132 && whatIfTotal < normalTotal)
+			if (whatIfSet.length >= 132 && whatIfTotal < normalTotal)
 				whatIfTotal = initData.principal * 2.5;
 
 			var net = normalTotal - whatIfTotal;
 
-			self.whatIfStatus( (net < 0)
+			self.whatIfStatus((net < 0)
 				? "bad"
 				: (net === 0)
-				? "neutral"
-				: "good");
+					? "neutral"
+					: "good");
 
 			// todo: call this SAVED.
 			self.netAmountPaid(currency(net));
@@ -201,7 +225,7 @@ function HealthGraph(initData) {
 		}
 	}
 
-	this.refreshChart = function(){
+	this.refreshChart = function () {
 		var chartOptions = {};
 
 		if (self.mode() == APPMODE.SUMMARY) {
@@ -211,8 +235,8 @@ function HealthGraph(initData) {
 				chartArea: {
 					top: 25,
 					bottom: 50,
-					width:'95%',
-					height:'100%'
+					width: '95%',
+					height: '100%'
 				},
 				legend: 'bottom',
 				pieSliceText: 'label',
@@ -239,7 +263,7 @@ function HealthGraph(initData) {
 				}
 			});
 
-			if(self.mode() == APPMODE.HISTORY) {
+			if (self.mode() == APPMODE.HISTORY) {
 				self.activeChart().draw(
 					'ColumnChart',
 					'chart_div_history',
@@ -251,7 +275,7 @@ function HealthGraph(initData) {
 				self.paymentYears(getPaymentYears(ds));
 				self.selectedYear(moment(last(ds).date).format("YYYY"));
 
-			}else if (self.mode() == APPMODE.WHATIF) {
+			} else if (self.mode() == APPMODE.WHATIF) {
 				self.activeChart().draw(
 					'ColumnChart',
 					'chart_div_whatif',

@@ -79,7 +79,7 @@ function Proxy(httpService){
 			rate: 0.133,
 			term: 72,
 			payment: 320.83,
-			lateFee: 5,
+			lateFee: 15,
 			startDate: "2012-10-11",
 			maturityDate: "2018-10-25",
 			paymentHistory: [
@@ -155,7 +155,7 @@ function Proxy(httpService){
 			rate: 0.133,
 			term: 72,
 			payment: 320.83,
-			lateFee: 5,
+			lateFee: 15,
 			startDate: "2012-10-11",
 			maturityDate: "2018-10-25",
 			paymentHistory: [

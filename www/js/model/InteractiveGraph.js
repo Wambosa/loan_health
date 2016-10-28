@@ -23,7 +23,6 @@ InteractiveGraph.prototype = {
 
 	draw: function (newChartType, divId, options, dataArray) {
 		var self = this;
-
 		var lastChartType = this.chartType;
 
 		var isAnimatable = function () {
