@@ -112,8 +112,6 @@ function HealthGraph(initData) {
 			i: (new Date).getTime()
 		});
 
-
-
 		if(touches.length >= 5){
 
 			touches.shift();
@@ -123,11 +121,9 @@ function HealthGraph(initData) {
 				var m = touches.map(function(a){return a.x});
 
 				var hor = m.reduce(function(a,b){return a-b;});
-				var ver = 0; //touches.map(function(a){return a.y}).reduce(sum);
+				var ver = 0;
 
-				console.log(m);
-
-				if(Math.abs(hor) > Math.abs(ver)-100)
+				if(Math.abs(hor) > Math.abs(ver))
 					direction = hor > 0 ? 'right' : 'left';
 
 			}else{
