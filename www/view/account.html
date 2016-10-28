@@ -34,7 +34,7 @@
 		<h1 data-bind="text: title" class="loan-health-status good"></h1>
 	</div>
 
-	<div id="chart_div_history" data-role="touch" data-enable-swipe="1" data-swipe="healthGraph.historyChartSwipe"></div>
+	<div id="chart_div_history"></div>
 
 	<div class="container groupCentered history-year-select-row" data-bind="foreach: { data: paymentYears, as: 'year'} ">
 		<a class="year-select" data-bind="text: year, css: { selected: year == healthGraph.selectedYear() }, click: function() { healthGraph.selectedYear(year); }"></a>

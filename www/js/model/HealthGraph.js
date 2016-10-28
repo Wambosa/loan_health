@@ -98,6 +98,49 @@ function HealthGraph(initData) {
 	this.currentTip = ko.observable(tips[0]);
 	this.tipIndicators = tips.map(function (t, i) { return i; });
 
+	var touches = [];
+	var direction = void 0;
+	this.globTouch = function(e){
+
+		var t = e.changedTouches[0];
+
+		var veryFirst = first(touches);
+
+		touches.push({
+			x: veryFirst && veryFirst.x - t.clientX || t.clientX,
+			y: veryFirst && veryFirst.y - t.clientY || t.clientY,
+			i: (new Date).getTime()
+		});
+
+
+
+		if(touches.length >= 5){
+
+			touches.shift();
+
+			if(last(touches).i - first(touches).i < 5000){
+
+				var m = touches.map(function(a){return a.x});
+
+				var hor = m.reduce(function(a,b){return a-b;});
+				var ver = 0; //touches.map(function(a){return a.y}).reduce(sum);
+
+				console.log(m);
+
+				if(Math.abs(hor) > Math.abs(ver)-100)
+					direction = hor > 0 ? 'right' : 'left';
+
+			}else{
+				direction = !1;
+			}
+
+			touches = [];
+		}
+
+		if(direction)
+			self.historyChartSwipe({direction:direction});
+	};
+
 	this.historyChartSwipe = function(e) {
 
 		var offset = swipe(e);
@@ -307,6 +350,9 @@ function HealthGraph(initData) {
 	this.initializeView = function () {
 		if (!self.isViewInitialized) {
 			self.isViewInitialized = true;
+
+			document.getElementById('chart_div_history')
+				.addEventListener("touchmove", self.globTouch, true);
 
 			ko.applyBindings(self);
 
