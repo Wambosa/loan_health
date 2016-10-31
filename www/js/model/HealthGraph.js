@@ -99,11 +99,11 @@ function HealthGraph(initData) {
 	this.tipIndicators = tips.map(function (t, i) { return i; });
 
 	var touches = [];
-	var direction = void 0;
+
 	this.globTouch = function(e){
 
+		var direction = void 0;
 		var t = e.changedTouches[0];
-
 		var veryFirst = first(touches);
 
 		touches.push({
@@ -112,22 +112,19 @@ function HealthGraph(initData) {
 			i: (new Date).getTime()
 		});
 
-		if(touches.length >= 5){
+		if(touches.length >= 7){
 
-			touches.shift();
+			if(last(touches).i - first(touches).i < 3000){
 
-			if(last(touches).i - first(touches).i < 5000){
+				var cloned = touches.slice(1);
 
-				var m = touches.map(function(a){return a.x});
-
+				var m = cloned.map(function(a){return a.x});
 				var hor = m.reduce(function(a,b){return a-b;});
-				var ver = 0;
 
-				if(Math.abs(hor) > Math.abs(ver))
+				var minMovement = 75;
+
+				if(Math.abs(hor) > minMovement)
 					direction = hor > 0 ? 'right' : 'left';
-
-			}else{
-				direction = !1;
 			}
 
 			touches = [];
@@ -348,6 +345,9 @@ function HealthGraph(initData) {
 			self.isViewInitialized = true;
 
 			document.getElementById('chart_div_history')
+				.addEventListener("touchmove", self.globTouch, true);
+
+			document.getElementById('chart_div_whatif')
 				.addEventListener("touchmove", self.globTouch, true);
 
 			ko.applyBindings(self);

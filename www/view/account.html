@@ -94,7 +94,7 @@
 		<h1 class="loan-health-status good" data-bind="visible: isPaidOff, text: whatIfStatus"></h1>
 	</div>
 
-	<div id="chart_div_whatif" data-role="touch" data-enable-swipe="1" data-swipe="healthGraph.historyChartSwipe" data-bind="visible: !isPaidOff()"></div>
+	<div id="chart_div_whatif" data-bind="visible: !isPaidOff()"></div>
 	<div class="empty-chart" data-bind="visible: isPaidOff"></div>
 
 	<div class="container groupCentered history-year-select-row" data-bind="foreach: { data: paymentYears, as: 'year'} ">
