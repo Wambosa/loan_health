@@ -27,7 +27,7 @@
 	<script type="text/javascript" src="js/const.js"></script>
 	<script type="text/javascript" src="js/util.js"></script>
 	<script type="text/javascript" src="js/model/InteractiveGraph.js"></script>
-	<script type="text/javascript" src="js/model/HealthGraph.js"></script>
+	<script type="text/javascript" src="js/model/Account.js"></script>
 
 	<!--init-->
 	<script src="js/init/AppShim.js"></script>
@@ -58,12 +58,12 @@
 		<img style="margin: 0 auto; display: block;" src="css/images/icon_transparent.png" />
 
 		<ul data-role="listview" data-style="inset">
-			<li><label for="username">Username: <input type="text" id="username" /></label></li>
+			<li><label for="username">Account ID: <input type="text" id="username" /></label></li>
 			<li><label for="password">Password: <input type="password" id="password" /></label></li>
 		</ul>
 
 		<div class="action-buttons">
-			<a href="view/account.html"
+			<a onclick="initializeView()"
 			   data-transition="overlay:down reverse"
 			   data-role="button"
 			   class="km-primary km-justified transitions-button">Login</a>

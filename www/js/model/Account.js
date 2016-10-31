@@ -1,4 +1,4 @@
-function HealthGraph(initData) {
+function Account(initData) {
 
 	var self = this;
 
@@ -10,7 +10,7 @@ function HealthGraph(initData) {
 		rate: "" + (initData.rate * 100) + " %",
 		payment: currency(initData.payment),
 		principal: initData.principal,
-		maturityDate: initData.maturityDate
+		maturityDate: moment(initData.maturityDate).format('MMM Do YYYY')
 	};
 
 	this.charts = {};
@@ -51,12 +51,12 @@ function HealthGraph(initData) {
 	});
 
 	this.slider = null;
-	var minimumPayment = roundDecimal(initData.payment * .5);
+	this.minimumPayment = roundDecimal(initData.payment * .5);
 	this.isPaidOff = ko.observable(initData.principal <= 0);
 	this.monthlyPayment = ko.observable(initData.payment);
 	this.monthlyPayment.subscribe(function (val) {
-		if (val < minimumPayment)
-			self.monthlyPayment(minimumPayment);
+		if (val < self.minimumPayment)
+			self.monthlyPayment(self.minimumPayment);
 
 		self.slider.value(val);
 		refreshWhatIfView();
@@ -340,46 +340,7 @@ function HealthGraph(initData) {
 		}
 	};
 
-	this.initializeView = function () {
-		if (!self.isViewInitialized) {
-			self.isViewInitialized = true;
-
-			document.getElementById('chart_div_history')
-				.addEventListener("touchmove", self.globTouch, true);
-
-			document.getElementById('chart_div_whatif')
-				.addEventListener("touchmove", self.globTouch, true);
-
-			ko.applyBindings(self);
-
-			app.view().footer.find('.km-tabstrip').data('kendoMobileTabStrip').bind('select', function (e) {
-				switch ($(e.item).index()) {
-					case 0: self.mode(APPMODE.HISTORY); break;
-					case 1: self.mode(APPMODE.SUMMARY); break;
-					case 2: self.mode(APPMODE.WHATIF); break;
-				}
-			});
-
-			self.slider = $('#payment-slider').kendoSlider({
-				increaseButtonTitle: 'Right',
-				decreaseButtonTitle: 'Left',
-				min: minimumPayment,
-				max: roundDecimal(initData.payment * 5),
-				smallStep: 50,
-				largeStep: 100,
-				value: healthGraph.monthlyPayment(),
-				slide: healthGraph.onSlide.bind(healthGraph)
-			}).data('kendoSlider');
-
-			self.slider.wrapper.css('width', '99%');
-
-			self.activeChart().table = paymentDataToArray(initData.paymentHistory);
-			self.activeChart().table.unshift(chartHeaders);
-			self.refreshChart();
-		}
-	};
-
 	return this;
 }
 
-HealthGraph.prototype.constructor = HealthGraph;
+Account.prototype.constructor = Account;

@@ -1,3 +1,15 @@
+
+/* custom icons */
+.km-bar-graph:before,
+.km-bar-graph:after {
+	content: "\e04b";
+}
+
+.km-question:before,
+.km-question:after {
+	content: "\e0fb";
+}
+
 .empty-chart {
 	width: 100%;
 	height: 33%;
@@ -10,141 +22,54 @@
 	border-style: none;
 }
 
+.groupCentered {
+	text-align: center;
+}
+
 .container {
 	/*display: flex;*/
 	/*justify-content: center;*/
 }
 
-.groupCentered {
-	text-align: center;
-}
-
-.container input{
+.container input {
 	margin: auto;
 }
 
-.container label{
+.container label {
 	font-weight: bold;
 	font-size: medium;
 	color: darkgray;
 }
 
-.action-buttons {
-	margin: 1em;
+.history-year-select-row {
+	margin-top: 0.5em;
+	margin-bottom: 2em;
 }
 
-.round-button {
-	display:inline-block;
-	width:40px;
-	height:40px;
-	line-height:40px;
-	border-radius: 50%;
-	text-align:center;
-	text-decoration:none;
-	color: #ff4350 !important;
-	background: white;
-	font-size:12px;
-	font-weight:bold;
-	margin-top: 5px;
-	margin-bottom: 5px;
-	border: solid 1px;
+.year-select {
+	margin: 0 0.2em;
+	padding: 0 0.25em;
 }
 
-.selectedRoundButton {
-	color: white !important;
-	background: #ff4350;
+.year-select.selected {
+	border-bottom: solid 2px #ff4350;
 }
 
-.pretty-print {
-	color: darkgray;
-	font-size: medium;
-	font-weight: bold;
-	background-color: #f7f7f7;
-	border: .2em solid #fff;
-	border-radius: 5px;
-	overflow: auto;
-	padding: 5px;
-	width: 100%;
-	height: 28vh;
+.advice-panel {
+	height: 33%;
+	padding: 1em;
 }
 
-.feelinTwentyTwo {
-	height: 20vh;
-}
-
-.fiftyPixelsHigh {
-	height: 47px;
-	font-size: medium;
-	font-weight: bold;
-}
-
-.k-slider .k-slider-selection {
-	background-color: #ff4350;
-}
-
-.km-nova .k-slider-horizontal .k-draghandle{
-	top: -15px;
-	width: 35px;
-	height: 35px;
-	opacity: .8;
-}
-
-#graph-view > div.km-content.km-widget.km-native-scroller > div.container.vertical{
+.tip-indicator {
 	display: inline-block;
+	border-radius: 4px;
+	height: 8px;
+	width: 8px;
+	background-color: lightgray;
 }
 
-h1.app-logo {
-	margin: 3em 0;
-	font-size: 3em;
-	font-weight: 100;
-	text-transform: uppercase;
-	text-align: center;
-	line-height: .9em;
-}
-
-a.wideButton.km-widget.km-button {
-	width: 32%;
-	height: 13%;
-	margin: 0 0 0 0;
-	margin-bottom: 10px;
-	padding-top: 10%;
-	color: #ff4350;
-	background-color: white;
-	border: none;
-	border-radius: 15px;
-	box-shadow: 0 10px #A9A9A9;
-}
-
-a.wideButton.km-widget.km-button.activeButton {
-	color: #fff;
+.tip-indicator.active {
 	background-color: #ff4350;
-	transform: translateY(5px);
-}
-
-#payment-keyboard{
-	width: 25%;
-	text-align: center;
-	font-weight: bold;
-	font-size: medium;
-	color: yellowgreen;
-}
-
-#loginpage .km-back {
-	display: none;
-}
-
-#graph-view > div.km-content.km-widget.km-native-scroller{
-	background-color: #f7f7f7;
-}
-
-.km-bar-graph:before,
-.km-bar-graph:after {
-	content: "\e04b";
-}
-
-.km-question:before,
-.km-question:after {
-	content: "\e0fb";
 }
 
 .top-home-content {
@@ -155,14 +80,6 @@ a.wideButton.km-widget.km-button.activeButton {
 .top-home-content * {
 	text-align: center;
 	margin: 0;
-}
-
-h1.loan-health-status {
-	margin: 0;
-	font-size: 3em;
-	font-weight: 100;
-	text-transform: uppercase;
-	line-height: .9em;
 }
 
 .loan-health-status.good {
@@ -177,18 +94,40 @@ h1.loan-health-status {
 	color: Red;
 }
 
-.history-year-select-row {
-	margin-top: 0.5em;
-	margin-bottom: 2em;
+h1.loan-health-status {
+	margin: 0;
+	font-size: 3em;
+	font-weight: 100;
+	text-transform: uppercase;
+	line-height: .9em;
 }
 
-.year-select {
-	margin: 0 0.2em;
-	padding: 0 0.25em;
+h1.app-logo {
+	margin: 3em 0;
+	font-size: 3em;
+	font-weight: 100;
+	text-transform: uppercase;
+	text-align: center;
+	line-height: .9em;
 }
 
-.year-select.selected { 
-	border-bottom: solid 2px #ff4350;
+h1.summary-maturity {
+	margin: 0;
+	font-size: 2em;
+	font-weight: 100;
+	text-transform: uppercase;
+	line-height: .7em;
+}
+
+.k-slider .k-slider-selection {
+	background-color: #ff4350;
+}
+
+.km-nova .k-slider-horizontal .k-draghandle {
+	top: -15px;
+	width: 35px;
+	height: 35px;
+	opacity: .8;
 }
 
 /* todo: can't do the nice glossy transparency thing. */
@@ -206,14 +145,22 @@ h1.loan-health-status {
 	color: black;
 }
 
-.tip-indicator {
-	display: inline-block;
-	border-radius: 4px;
-	height: 8px;
-	width: 8px;
-	background-color: lightgray;
+#payment-keyboard {
+	width: 25%;
+	text-align: center;
+	font-weight: bold;
+	font-size: medium;
+	color: yellowgreen;
 }
 
-.tip-indicator.active {
-	background-color: #ff4350;
+#loginpage .km-back {
+	display: none;
+}
+
+#graph-view > div.km-content.km-widget.km-native-scroller {
+	background-color: #f7f7f7;
+}
+
+#graph-view > div.km-content.km-widget.km-native-scroller > div.container.vertical {
+	display: inline-block;
 }
