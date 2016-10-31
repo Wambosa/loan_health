@@ -169,10 +169,10 @@ function Account(initData) {
 		window.open("https://s3.amazonaws.com/scusa-compare-solutions/data/myevents.ics", "_system", "location=yes")
 	};
 
-	this.remainingPrincipal = Math.max(0, initData.principal - (initData.paymentHistory
+	this.remainingPrincipal = roundDecimal(Math.max(0, initData.principal - (initData.paymentHistory
 		.map(function (pay) {
 			return pay.principal;
-		}).reduce(sum)));
+		}).reduce(sum))));
 
 	this.activeDataSet = function (mode) {
 
