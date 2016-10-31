@@ -75,7 +75,7 @@ function Account(initData) {
 
 		if (e.direction === 'left') offset = 1;
 		else if (e.direction === 'right') offset = -1;
-		
+
 		return offset;
 	};
 
@@ -101,7 +101,14 @@ function Account(initData) {
 
 	var touches = [];
 
-	this.globTouch = function(e){
+	this.globTouchEnd = function (e) {
+		// as soon as any touch stops,
+		// kill all active touches. 
+		touches.length = 0;
+	};
+
+	this.globTouch = function (e) {
+		var minMovement = 50;
 		var direction = void 0;
 		var t = e.changedTouches[0];
 		var veryFirst = first(touches);
@@ -109,32 +116,29 @@ function Account(initData) {
 		touches.push({
 			x: veryFirst && veryFirst.x - t.clientX || t.clientX,
 			y: veryFirst && veryFirst.y - t.clientY || t.clientY,
-			i: (new Date).getTime()
+			i: (new Date()).getTime()
 		});
 
-		if(touches.length >= 7){
+		if (touches.length >= 5) {
 
-			if(last(touches).i - first(touches).i < 3000){
+			if (last(touches).i - first(touches).i < 3000) {
 
 				var cloned = touches.slice(1);
+				var m = cloned.map(function (a) { return a.x });
+				var hor = m.reduce(function (a, b) { return a - b; });
 
-				var m = cloned.map(function(a){return a.x});
-				var hor = m.reduce(function(a,b){return a-b;});
-
-				var minMovement = 75;
-
-				if(Math.abs(hor) > minMovement)
+				if (Math.abs(hor) > minMovement)
 					direction = hor > 0 ? 'right' : 'left';
 			}
 
-			touches = [];
+			touches.length = 0;
 		}
 
-		if(direction)
-			self.historyChartSwipe({direction:direction});
+		if (direction)
+			self.historyChartSwipe({ direction: direction });
 	};
 
-	this.historyChartSwipe = function(e) {
+	this.historyChartSwipe = function (e) {
 
 		// begin: paranoia
 		try {
@@ -224,14 +228,6 @@ function Account(initData) {
 		} else {
 
 			var probableMaturity = moment(last(whatIfSet).date);
-
-			// check this out (its very close, but not quite perfect yet)
-			// console.log(predictMaturity({
-			// 	principal: self.remainingPrincipal,
-			// 	rate: initData.rate,
-			// 	payment: self.selectedStrategy() == "Replacing One Payment" ? initData.payment : self.monthlyPayment(),
-			// 	replace: self.selectedStrategy() == "Replacing One Payment" && self.monthlyPayment()
-			// }), 'vs', whatIfSet.length);
 
 			self.paymentYears(getWhatIfYears(probableMaturity));
 			self.selectedYear(first(self.paymentYears()));

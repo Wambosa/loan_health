@@ -36,9 +36,10 @@ function initializeView() {
 
 			accountModel = new Account(userData);
 
+			// set the hash on account load.
 			document.location.hash = '#view/account.html';
 
-			window.setTimeout(function(){
+			window.setTimeout(function() {
 
 				ko.applyBindings(accountModel);
 
@@ -47,6 +48,8 @@ function initializeView() {
 
 				document.getElementById('chart_div_whatif')
 					.addEventListener("touchmove", accountModel.globTouch, true);
+
+				document.addEventListener("touchend", accountModel.globTouchEnd.bind(accountModel));
 
 				app.view().footer.find('.km-tabstrip').data('kendoMobileTabStrip').bind('select', function (e) {
 					switch ($(e.item).index()) {
