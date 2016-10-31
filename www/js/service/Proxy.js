@@ -149,7 +149,7 @@ function Proxy(httpService){
 		},
 
 		"1111": {
-			name: "Gond",
+			name: "Yames Gond",
 			vehicle: "2013 FORD FIESTA",
 			principal: 15769.30,
 			rate: 0.133,

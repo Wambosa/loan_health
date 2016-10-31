@@ -13,6 +13,12 @@ function reverse(array) {
 	return copy.reverse();
 }
 
+function rand (min, max) {
+	var f = Math.random();
+
+	return Math.floor(f * max);
+}
+
 function currency(num) {
 	// rounding to a specific decimal place.
 	var amount = Math.floor(Math.round((num || 0) * 100) / 100);
@@ -41,6 +47,26 @@ function daysThisYear(year) {
 function daysBetween(from, to) {
 	return Math.floor(Math.abs((+moment(to) - +moment(from))) / 86400000);
 }
+
+// RIPPED from underscore.js
+// Returns a function, that, as long as it continues to be invoked, will not
+// be triggered. The function will be called after it stops being called for
+// N milliseconds. If `immediate` is passed, trigger the function on the
+// leading edge, instead of the trailing.
+function debounce(func, wait, immediate) {
+	var timeout;
+	return function() {
+		var context = this, args = arguments;
+		var later = function() {
+			timeout = null;
+			if (!immediate) func.apply(context, args);
+		};
+		var callNow = immediate && !timeout;
+		clearTimeout(timeout);
+		timeout = setTimeout(later, wait);
+		if (callNow) func.apply(context, args);
+	};
+};
 
 function paymentDateSeed(payments){
 
@@ -221,7 +247,7 @@ function getTotalOfPayments(payments) {
  * ex: +10 daysFromDueDate would be assessed a late fee and change the schedule.
  * 
  * @param options {Object} 
- * 
+ * 	@prop fee {Number} flat amount. This does not cover all cases. We know that.
  *  */
 function getFuturePaymentPlan(options) {
 
@@ -241,7 +267,8 @@ function getFuturePaymentPlan(options) {
 	var i = 0;
 
 	// TODO: TRIPP?
-	// fee balance... feelsBadMan
+	// 6 months at a different (something) amount, no fees.
+	
 	// todo: I think there might be some numeric precision issues going on here.
 	// we might want to address those at some point.
 	while (amountLeft > 0 && i < maxMonths) {
@@ -258,9 +285,6 @@ function getFuturePaymentPlan(options) {
 			paymentAmount = 0;
 		}
 
-		// 6 months at a different amount, rate is the ... same?
-		// no fees.
-
 		// optional: reset the payment back to normal after first payment
 		if (isReplaceFirstPayment && i > 0)
 			paymentAmount = options.defaultPayment;
@@ -274,9 +298,8 @@ function getFuturePaymentPlan(options) {
 		var towardsPrincipal = Math.min(amountLeft, Math.max(paymentAmount - interest, 0));
 		var towardsInterest = Math.min(paymentAmount, interest);
 
-		// if we pay late OR if we pay less than owed. incur fee
-		// technically the fee is assessed at the END but for our purposes
-		// I think it's fine
+		// if we pay late OR if we pay less than owed. incur late fee
+		// technically the fee is assessed at the END
 		if (daysFromDueDate > 0 || paymentAmount < options.defaultPayment)
 			var fee = options.fee;
 

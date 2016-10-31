@@ -26,8 +26,6 @@ DEVICE = new Device(function initViewModels(){
 });
 
 function initializeView() {
-	console.log('init');
-
 	if (!window.isViewInitialized) {
 		window.isViewInitialized = true;
 
@@ -38,7 +36,7 @@ function initializeView() {
 
 			accountModel = new Account(userData);
 
-			window.location.href = '/#view/account.html';
+			document.location.hash = '#view/account.html';
 
 			window.setTimeout(function(){
 

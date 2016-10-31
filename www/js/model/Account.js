@@ -94,14 +94,14 @@ function Account(initData) {
 		}
 	};
 
-	this.tipIndex = ko.observable(0);
-	this.currentTip = ko.observable(tips[0]);
+	// add a little randomness into our lives.
+	this.tipIndex = ko.observable(rand(0, tips.length));
+	this.currentTip = ko.observable(tips[this.tipIndex()]);
 	this.tipIndicators = tips.map(function (t, i) { return i; });
 
 	var touches = [];
 
 	this.globTouch = function(e){
-
 		var direction = void 0;
 		var t = e.changedTouches[0];
 		var veryFirst = first(touches);
@@ -136,24 +136,29 @@ function Account(initData) {
 
 	this.historyChartSwipe = function(e) {
 
-		var offset = swipe(e);
+		// begin: paranoia
+		try {
+			var offset = swipe(e);
 
-		if (offset !== 0) {
-			var next = Number(self.selectedYear()) + offset;
-			var firstYear = first(self.paymentYears());
-			var lastYear = last(self.paymentYears());
+			if (offset !== 0) {
+				var next = Number(self.selectedYear()) + offset;
+				var firstYear = first(self.paymentYears());
+				var lastYear = last(self.paymentYears());
 
-			if (next <= lastYear && next >= firstYear) {
-				self.selectedYear(next);
+				if (next <= lastYear && next >= firstYear) {
+					self.selectedYear(next);
+				}
 			}
+		}
+		catch (ex) {
+			console.log(ex);
 		}
 	};
 
+	// todo: this should be more dynamic...
+	// I had bigger plans for this.
 	this.title = "good";
 	this.subtitle = "My LoanHealth:";
-	this.toggleHomeScreen = function () {
-		// todo: something, show the balance, health, etc.
-	};
 
 	this.generateCalendarReminder = function () {
 		// todo: this needs to actually be something real.
@@ -184,7 +189,7 @@ function Account(initData) {
 		return this.charts[this.mode()];
 	};
 
-	this.netAmountPaid = ko.observable(currency(0));
+	this.netAmountSaved = ko.observable(currency(0));
 
 	// todo: this might be stupid. freezing the object. lol
 	var defaultChartOptions = Object.freeze({
@@ -197,14 +202,15 @@ function Account(initData) {
 			width: Math.floor(window.screen.width * 0.9),
 			height: Math.floor(window.screen.height * 0.4)
 		},
+		tooltip: { isHtml: true },
 		legend: { position: 'none' },
 		backgroundColor: '#fff',
 		colors: colors.redTones
 	});
 
-	this.onSlide = function (sliderEvent) {
+	this.onSlide = debounce(function (sliderEvent) {
 		this.monthlyPayment(sliderEvent.value);
-	};
+	}, 200);
 
 	function refreshWhatIfView() {
 
@@ -220,12 +226,12 @@ function Account(initData) {
 			var probableMaturity = moment(last(whatIfSet).date);
 
 			// check this out (its very close, but not quite perfect yet)
-			console.log(predictMaturity({
-				principal: self.remainingPrincipal,
-				rate: initData.rate,
-				payment: self.selectedStrategy() == "Replacing One Payment" ? initData.payment : self.monthlyPayment(),
-				replace: self.selectedStrategy() == "Replacing One Payment" && self.monthlyPayment()
-			}), 'vs', whatIfSet.length);
+			// console.log(predictMaturity({
+			// 	principal: self.remainingPrincipal,
+			// 	rate: initData.rate,
+			// 	payment: self.selectedStrategy() == "Replacing One Payment" ? initData.payment : self.monthlyPayment(),
+			// 	replace: self.selectedStrategy() == "Replacing One Payment" && self.monthlyPayment()
+			// }), 'vs', whatIfSet.length);
 
 			self.paymentYears(getWhatIfYears(probableMaturity));
 			self.selectedYear(first(self.paymentYears()));
@@ -254,8 +260,7 @@ function Account(initData) {
 					? "neutral"
 					: "good");
 
-			// todo: call this SAVED.
-			self.netAmountPaid(currency(net));
+			self.netAmountSaved(currency(net));
 
 			updateDataTable(self.selectedYear());
 		}
