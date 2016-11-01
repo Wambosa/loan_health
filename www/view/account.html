@@ -30,7 +30,7 @@
 
 	<div class="top-home-content">
 		<h4 data-bind="text: subtitle"></h4>
-		<h1 data-bind="text: title" class="loan-health-status good"></h1>
+		<h1 data-bind="text: title, css: { 'good': title === 'good', 'neutral': title === 'average', 'bad': title === 'unhealthy' }" class="loan-health-status"></h1>
 	</div>
 
 	<div id="chart_div_history"></div>
@@ -39,20 +39,25 @@
 		<a class="year-select" data-bind="text: year, css: { selected: year == accountModel.selectedYear() }, click: function() { accountModel.selectedYear(year); }"></a>
 	</div>
 
+	<div class="horizontal-separator"></div>
 	<div class="advice-panel" data-role="touch" data-enable-swipe="1" data-swipe="accountModel.nextTip">
-		<h2 data-bind="html: currentTip"></h2>
+		
+		<div style="font-size: 14pt">
+			<span class="km-icon km-about" style="float: left; margin-right: 0.5em;"></span>
+			<span data-bind="html: currentTip"></h2>
+		</div>
 
-		<div style="text-align: center; margin-top: 1em;" data-bind="foreach: tipIndicators">
+		<div style="text-align: center; margin-top: 2em;" data-bind="foreach: tipIndicators">
 			<span class="tip-indicator" data-bind="css: { 'active': $data === $parent.tipIndex() }"></span>
 		</div>
 	</div>
 
 	<ul data-role="listview">
-		<li>Payment History</li>
+		<li><strong>Payment History</strong></li>
 		<!-- ko foreach: paymentHistory -->
 		<li>
 			<a data-bind="attr: { href: '#payment-detail?id=' + id }">
-				<span data-bind="text: date"></span>
+				<span data-bind="text: displayDate"></span>
 				<span style="float: right; margin-right: 2em;" data-bind="text: '$ ' + Math.round(principal + interest + fee)"></span>
 				<span style="float: right; margin-right: 1em; color: red;" data-bind="visible: fee > 0">!</span>
 			</a>
@@ -125,7 +130,10 @@
 		</li>
 		<li>
 			<label>Schedule
-                <select data-role="dropdown" class="strategy-selector" data-bind="options: paymentStrategies, value: selectedStrategy"></select>        
+                <select data-role="dropdown" class="strategy-selector" data-bind="options: strategyDropdown,
+                optionsText: 'value',
+                optionsValue: 'value',
+                value: selectedStrategy"></select>
             </label>
 		</li>
 	</ul>

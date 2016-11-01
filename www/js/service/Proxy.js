@@ -14,6 +14,7 @@ function Proxy(httpService){
 			name: "Oliver Ontime",
 			vehicle: "2013 FORD FUSION",
 			principal: 15769.30,
+			health: "good",
 			rate: 0.133,
 			term: 72,
 			payment: 320.83,
@@ -77,6 +78,7 @@ function Proxy(httpService){
 			vehicle: "2013 FORD FIESTA",
 			principal: 15769.30,
 			rate: 0.133,
+			health: "average",
 			term: 72,
 			payment: 320.83,
 			lateFee: 15,
@@ -152,6 +154,7 @@ function Proxy(httpService){
 			name: "Yames Gond",
 			vehicle: "2013 FORD FIESTA",
 			principal: 15769.30,
+			health: "unhealthy",
 			rate: 0.133,
 			term: 72,
 			payment: 320.83,
@@ -159,27 +162,27 @@ function Proxy(httpService){
 			startDate: "2012-10-11",
 			maturityDate: "2018-10-25",
 			paymentHistory: [
-				{id: 0, date: "2012-11-10", principal: 153.09, interest: 171.91, fee: 0.0},
-				{id: 0, date: "2012-12-14", principal: 7.06, interest: 192.94, fee: 0.0},
-				{id: 0, date: "2012-12-26", principal: 81.94, interest: 68.06, fee: 0.0},
-				{id: 0, date: "2013-01-26", principal: 0, interest: 125, fee: 0.0},
-				{id: 0, date: "2013-02-12", principal: 53.51, interest: 146.49, fee: 0.0},
-				{id: 0, date: "2013-02-25", principal: 126.70, interest: 73.30, fee: 0.0},
+				{id: 1, date: "2012-11-10", principal: 153.09, interest: 171.91, fee: 0.0},
+				{id: 2, date: "2012-12-14", principal: 7.06, interest: 192.94, fee: 0.0},
+				{id: 3, date: "2012-12-26", principal: 81.94, interest: 68.06, fee: 0.0},
+				{id: 4, date: "2013-01-26", principal: 0, interest: 125, fee: 0.0},
+				{id: 5, date: "2013-02-12", principal: 53.51, interest: 146.49, fee: 0.0},
+				{id: 6, date: "2013-02-25", principal: 126.70, interest: 73.30, fee: 0.0},
 
-				{id: 0, date: "2013-03-11", principal: 21.71, interest: 78.29, fee: 0.0},
-				{id: 0, date: "2013-03-22", principal: 138.58, interest: 61.42, fee: 0.0},
-				{id: 0, date: "2013-04-13", principal: 78.25, interest: 121.75, fee: 0.0},
-				{id: 0, date: "2013-04-26", principal: 163.92, interest: 66.06, fee: 0.0},
-				{id: 0, date: "2013-05-21", principal: 58.41, interest: 141.59, fee: 0.0},
-				{id: 0, date: "2013-06-04", principal: 39.89, interest: 75.94, fee: 0.0},
-				{id: 0, date: "2013-06-29", principal: 64.76, interest: 135.24, fee: 0.0},
-				{id: 0, date: "2013-07-16", principal: 29.27, interest: 91.56, fee: 0},
-				{id: 0, date: "2013-07-27", principal: 190.87, interest: 59.13, fee: 0.0},
-				{id: 0, date: "2013-09-17", principal: 29.40, interest: 270.60, fee: 0},
-				{id: 0, date: "2013-11-16", principal: 0, interest: 200, fee: 0},
-				{id: 0, date: "2013-11-29", principal: 18.74, interest: 181.26, fee: 0.0},
-				{id: 0, date: "2013-12-12", principal: 70.68, interest: 79.32, fee: 0.0},
-				{id: 0, date: "2013-12-20", principal: 77.89, interest: 42.11, fee: 0.0}
+				{id: 7, date: "2013-03-11", principal: 21.71, interest: 78.29, fee: 0.0},
+				{id: 8, date: "2013-03-22", principal: 138.58, interest: 61.42, fee: 0.0},
+				{id: 9, date: "2013-04-13", principal: 78.25, interest: 121.75, fee: 0.0},
+				{id: 10, date: "2013-04-26", principal: 163.92, interest: 66.06, fee: 0.0},
+				{id: 11, date: "2013-05-21", principal: 58.41, interest: 141.59, fee: 0.0},
+				{id: 12, date: "2013-06-04", principal: 39.89, interest: 75.94, fee: 0.0},
+				{id: 13, date: "2013-06-29", principal: 64.76, interest: 135.24, fee: 0.0},
+				{id: 14, date: "2013-07-16", principal: 29.27, interest: 91.56, fee: 0},
+				{id: 15, date: "2013-07-27", principal: 190.87, interest: 59.13, fee: 0.0},
+				{id: 16, date: "2013-09-17", principal: 29.40, interest: 270.60, fee: 0},
+				{id: 17, date: "2013-11-16", principal: 0, interest: 200, fee: 0},
+				{id: 18, date: "2013-11-29", principal: 18.74, interest: 181.26, fee: 0.0},
+				{id: 19, date: "2013-12-12", principal: 70.68, interest: 79.32, fee: 0.0},
+				{id: 20, date: "2013-12-20", principal: 77.89, interest: 42.11, fee: 0.0}
 			]
 		}
 	};
@@ -187,6 +190,11 @@ function Proxy(httpService){
 	return {
 		getTest: getTest,
 		getUserData: function(key, callback){
+
+			db[key].paymentHistory.forEach(function(pay){
+				pay.displayDate = moment(pay.date).format('MMM Do YYYY');
+			});
+
 			callback(db[key]);
 		}
 	}

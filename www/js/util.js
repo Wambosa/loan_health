@@ -189,47 +189,47 @@ function predictPayments(options) {
 
 	var strategy = options.strategy;
 
-	return {
-		"Normal": getFuturePaymentPlan,
-		
-		"A Week Early Every Month": function () {
-			options.daysFromDueDate = -7;
-			return getFuturePaymentPlan(options);
-		},
+	var fmap = {};
 
-		"A Week Late Every Month": function () {
-			options.daysFromDueDate = 7;
-			return getFuturePaymentPlan(options);
-		},
+	fmap[STRATEGY.NORMAL] = getFuturePaymentPlan;
 
-		"Every Other Month": function() {
-			options.increment = 2;
-			return getFuturePaymentPlan(options);
-		},
+	fmap[STRATEGY.EARLY] = function () {
+		options.daysFromDueDate = -7;
+		return getFuturePaymentPlan(options);
+	};
 
-		"One Time On Top of Normal": function () {
-			var extraAmount = options.payment;
-			options.payment = options.defaultPayment;
-			options.principal -= extraAmount;
+	fmap[STRATEGY.LATE] = function () {
+		options.daysFromDueDate = 7;
+		return getFuturePaymentPlan(options);
+	};
 
-			return supplementalPayment(
-				extraAmount,
-				getFuturePaymentPlan(options)
-			);
-		},
+	fmap[STRATEGY.HOPSCOTCH] = function() {
+		options.increment = 2;
+		return getFuturePaymentPlan(options);
+	};
 
-		"Replacing One Payment": function () {
+	fmap[STRATEGY.SUPPLEMENT] = function () {
+		var extraAmount = options.payment;
+		options.payment = options.defaultPayment;
+		options.principal -= extraAmount;
+
+		return supplementalPayment(
+			extraAmount,
+			getFuturePaymentPlan(options)
+		);
+	};
+
+	fmap[STRATEGY.REPLACE] = function () {
 			options.replaceOnce = true;
 			return getFuturePaymentPlan(options);
-		},
+	};
 
-		"Two Month Deferment": function() {
-			options.defermentMonths = 2;
-
-			return getFuturePaymentPlan(options);
-		}
-
-	}[strategy](options);
+	fmap[STRATEGY.DEFERMENT] = function() {
+		options.defermentMonths = 2;
+		return getFuturePaymentPlan(options);
+	};
+	
+	return fmap[strategy](options);
 }
 
 /**

@@ -19,7 +19,7 @@ function Account(initData) {
 	this.charts[APPMODE.WHATIF] = new InteractiveGraph();
 
 	this.setCurrentPayment = function (item) {
-		self.currentPaymentDate(item.date);
+		self.currentPaymentDate(item.displayDate);
 		self.currentPaymentPrincipal('$ ' + item.principal);
 		self.currentPaymentInterest('$ ' + item.interest);
 		self.currentPaymentFee('$ ' + item.fee);
@@ -62,7 +62,7 @@ function Account(initData) {
 		refreshWhatIfView();
 	});
 
-	this.selectedStrategy = ko.observable(first(paymentStrategies));
+	this.selectedStrategy = ko.observable(STRATEGY.NORMAL);
 	this.selectedStrategy.subscribe(function (_) {
 		refreshWhatIfView();
 	});
@@ -161,7 +161,7 @@ function Account(initData) {
 
 	// todo: this should be more dynamic...
 	// I had bigger plans for this.
-	this.title = "good";
+	this.title = initData.health;
 	this.subtitle = "My LoanHealth:";
 
 	this.generateCalendarReminder = function () {
@@ -239,7 +239,7 @@ function Account(initData) {
 				payment: initData.payment,
 				defaultPayment: initData.payment,
 				fee: initData.lateFee,
-				strategy: "Normal"
+				strategy: STRATEGY.NORMAL
 			});
 
 			var normalTotal = getTotalOfPayments(normal);
@@ -262,8 +262,12 @@ function Account(initData) {
 		}
 	}
 
-	this.refreshChart = function () {
+	this.refreshChart = function (e) {
 		var chartOptions = {};
+
+		// lions and tigers and bears! oh my!
+		if(e)
+			self.mode(e.sender.id.split('-')[1]);
 
 		if (self.mode() == APPMODE.SUMMARY) {
 			// needs to be the same.
@@ -296,7 +300,7 @@ function Account(initData) {
 				hAxis: { textStyle: { color: '#a9a9a9' } },
 				animation: {
 					duration: 333,
-					easing: 'out',
+					easing: 'out'
 				}
 			});
 

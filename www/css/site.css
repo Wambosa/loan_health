@@ -16,7 +16,7 @@
 }
 
 .strategy-selector {
-	float: right;
+	float: left;
 	color: darkgrey;
 	font-style: italic;
 	border-style: none;
@@ -24,11 +24,6 @@
 
 .groupCentered {
 	text-align: center;
-}
-
-.container {
-	/*display: flex;*/
-	/*justify-content: center;*/
 }
 
 .container input {
@@ -58,6 +53,7 @@
 .advice-panel {
 	height: 33%;
 	padding: 1em;
+	border: solid 1px #dfe1e2;
 }
 
 .tip-indicator {
@@ -139,7 +135,6 @@ h1.summary-maturity {
 	float: right;
 	margin-right: 1em
 }
-
 
 .km-nova .km-list > li > .km-listview-link {
 	color: black;
