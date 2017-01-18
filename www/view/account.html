@@ -40,17 +40,11 @@
 	</div>
 
 	<div class="horizontal-separator"></div>
-	<div class="advice-panel" data-role="touch" data-enable-swipe="1" data-swipe="accountModel.nextTip">
-		
-		<div style="font-size: 14pt">
-			<span class="km-icon km-about" style="float: left; margin-right: 0.5em;"></span>
-			<span data-bind="html: currentTip"></h2>
-		</div>
-
-		<div style="text-align: center; margin-top: 2em;" data-bind="foreach: tipIndicators">
-			<span class="tip-indicator" data-bind="css: { 'active': $data === $parent.tipIndex() }"></span>
-		</div>
-	</div>
+  <div class="container groupCentered">
+    <h2>Estimated Maturity Balance:<h2> 
+    <h1 style="color: #ff4350">$5386.29</h1>
+    <p class="small">Based on your current payment history.</p>
+  </div>
 
 	<ul data-role="listview">
 		<li><strong>Payment History</strong></li>

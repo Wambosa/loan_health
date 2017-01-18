@@ -9,7 +9,7 @@ function Account(initData) {
 		vehicle: initData.vehicle,
 		rate: "" + (initData.rate * 100) + " %",
 		payment: currency(initData.payment),
-		principal: initData.principal,
+		principal: "$"+initData.principal,
 		maturityDate: moment(initData.maturityDate).format('MMM Do YYYY')
 	};
 
